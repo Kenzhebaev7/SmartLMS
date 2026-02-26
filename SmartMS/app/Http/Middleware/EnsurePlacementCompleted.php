@@ -8,20 +8,25 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnsurePlacementCompleted
 {
-    /**
-     * Handle an incoming request.
-     *
-     * If the user's level is not set, redirect them to the placement test.
-     */
     public function handle(Request $request, Closure $next): Response
     {
         $user = $request->user();
 
-        if ($user && $user->level === null) {
-            return redirect()->route('test.show');
+        if (!$user) {
+            return $next($request);
+        }
+
+        if ($user->role !== \App\Models\User::ROLE_STUDENT) {
+            return $next($request);
+        }
+
+        if ($user->level === null || $user->level === 'none') {
+            if ($request->routeIs('placement-test.*')) {
+                return $next($request);
+            }
+            return redirect()->route('placement-test.show');
         }
 
         return $next($request);
     }
 }
-

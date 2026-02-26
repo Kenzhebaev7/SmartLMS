@@ -39,12 +39,14 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role' => \App\Models\User::ROLE_STUDENT,
+            'level' => 'none',
         ]);
 
         event(new Registered($user));
 
         Auth::login($user);
 
-        return redirect()->route('test.show');
+        return redirect()->route('placement-test.show');
     }
 }

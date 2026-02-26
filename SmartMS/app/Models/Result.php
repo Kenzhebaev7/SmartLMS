@@ -1,0 +1,29 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
+class Result extends Model
+{
+    protected $fillable = ['user_id', 'quiz_id', 'score', 'passed', 'attempted_at'];
+
+    protected function casts(): array
+    {
+        return [
+            'passed' => 'boolean',
+            'attempted_at' => 'datetime',
+        ];
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function quiz(): BelongsTo
+    {
+        return $this->belongsTo(Quiz::class);
+    }
+}

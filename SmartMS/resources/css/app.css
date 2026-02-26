@@ -1,3 +1,147 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+    html {
+        background-color: #ffffff;
+        color: #0f172a;
+    }
+    body {
+        @apply font-sans antialiased;
+        background-color: #ffffff;
+        color: #0f172a;
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+    /* Светлая тема: белый фон (приоритет) */
+    html:not(.dark) body,
+    html.light body,
+    html:not(.dark) .min-h-screen.bg-white {
+        background-color: #ffffff !important;
+    }
+    /* Тёмная тема: явный контраст */
+    .dark,
+    .dark html,
+    .dark body {
+        background-color: #0f172a;
+        color: #f1f5f9;
+    }
+    .dark a:not([class*="bg-"]) {
+        color: #38bdf8;
+    }
+    .dark a:not([class*="bg-"]):hover {
+        color: #7dd3fc;
+    }
+}
+
+/* Карточки и блоки: читаемый текст в обеих темах */
+.bg-white {
+    background-color: #ffffff;
+    color: #0f172a;
+}
+.dark .bg-white,
+.dark .bg-slate-50,
+.dark [class*="bg-slate-8"] {
+    background-color: #1e293b !important;
+    color: #f1f5f9 !important;
+}
+.dark .bg-slate-100 {
+    background-color: #334155 !important;
+    color: #f1f5f9 !important;
+}
+.dark .text-slate-500,
+.dark .text-slate-600,
+.dark .text-gray-500 {
+    color: #94a3b8 !important;
+}
+.dark .text-slate-700,
+.dark .text-slate-800,
+.dark .text-slate-900 {
+    color: #f1f5f9 !important;
+}
+.dark a.bg-primary,
+.dark button.bg-primary {
+    background-color: #f1f5f9 !important;
+    color: #0f172a !important;
+}
+.dark a.bg-primary:hover,
+.dark button.bg-primary:hover {
+    background-color: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+.dark .border-slate-200,
+.dark .border-gray-200 {
+    border-color: #475569 !important;
+}
+/* Поля ввода: всегда читаемый текст */
+input:not([type="submit"]):not([type="button"]),
+textarea,
+select {
+    color: #0f172a;
+    background-color: #ffffff;
+    border-color: #cbd5e1;
+}
+.dark input:not([type="submit"]):not([type="button"]),
+.dark textarea,
+.dark select {
+    color: #f1f5f9 !important;
+    background-color: #334155 !important;
+    border-color: #475569 !important;
+}
+.dark input::placeholder,
+.dark textarea::placeholder {
+    color: #94a3b8 !important;
+}
+/* Сообщения и подсказки: читаемый текст */
+.dark .text-primary-700,
+.dark .text-primary-light,
+.dark [class*="text-primary-2"] {
+    color: #99f6e4 !important;
+}
+.dark .bg-primary-50 .text-primary-700,
+.dark .bg-primary\/20 {
+    color: #ccfbf1 !important;
+}
+.dark .text-amber-800,
+.dark .text-accent-dark {
+    color: #fde68a !important;
+}
+.dark .text-emerald-800 {
+    color: #a7f3d0 !important;
+}
+
+/* Режим для слабовидящих: увеличенный шрифт */
+.a11y,
+.a11y body {
+    font-size: 1.25rem;
+}
+.a11y .text-xs { font-size: 1rem; }
+.a11y .text-sm { font-size: 1.125rem; }
+.a11y .text-base { font-size: 1.375rem; }
+.a11y .text-lg { font-size: 1.5rem; }
+.a11y .text-xl { font-size: 1.75rem; }
+.a11y .text-2xl { font-size: 2rem; }
+.a11y .text-3xl { font-size: 2.25rem; }
+.a11y .text-4xl { font-size: 2.5rem; }
+.a11y h1, .a11y h2, .a11y h3 { font-weight: 700; }
+
+/* Микро-взаимодействия: кнопки и карточки */
+@layer utilities {
+    .btn-interactive {
+        transform-origin: center;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+}
+
+/* Белый фон только в светлой теме; тёмная — один цвет снизу доверху */
+html:not(.dark) body.bg-white,
+html:not(.dark) body .min-h-screen.bg-white,
+html:not(.dark) main.bg-white {
+    background-color: #ffffff !important;
+}
+html.dark body,
+html.dark body .min-h-screen,
+html.dark main {
+    background-color: #0f172a !important;
+}
