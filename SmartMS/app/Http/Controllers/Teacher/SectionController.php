@@ -12,7 +12,7 @@ class SectionController extends Controller
 {
     public function index(): View
     {
-        $sections = Section::orderBy('order')->get();
+        $sections = Section::orderBy('grade')->orderByDesc('is_featured')->orderBy('order')->get();
         return view('teacher.sections.index', ['sections' => $sections]);
     }
 
@@ -29,10 +29,12 @@ class SectionController extends Controller
             'description' => ['nullable', 'string'],
             'description_kk' => ['nullable', 'string'],
             'order' => ['nullable', 'integer', 'min:0'],
-            'level' => ['nullable', 'in:beginner,advanced'],
+            'grade' => ['nullable', 'integer', 'in:9,10,11'],
+            'is_revision' => ['nullable', 'boolean'],
         ]);
         $data['order'] = $data['order'] ?? Section::max('order') + 1;
-        $data['level'] = $data['level'] ?? null;
+        $data['grade'] = $data['grade'] ?? null;
+        $data['is_revision'] = !empty($data['is_revision']);
         Section::create($data);
         return redirect()->route('teacher.sections.index')->with('status', __('messages.section_created'));
     }
@@ -56,11 +58,13 @@ class SectionController extends Controller
             'description' => ['nullable', 'string'],
             'description_kk' => ['nullable', 'string'],
             'order' => ['nullable', 'integer', 'min:0'],
-            'level' => ['nullable', 'in:beginner,advanced'],
+            'grade' => ['nullable', 'integer', 'in:9,10,11'],
+            'is_revision' => ['nullable', 'boolean'],
         ]);
-        $data['level'] = $data['level'] ?? null;
+        $data['grade'] = $data['grade'] ?? null;
+        $data['is_revision'] = !empty($data['is_revision']);
         $section->update($data);
-        return redirect()->route('teacher.sections.index')->with('status', 'Раздел обновлён.');
+        return redirect()->route('teacher.sections.index')->with('status', __('messages.section_updated'));
     }
 
     public function destroy(Section $section): RedirectResponse

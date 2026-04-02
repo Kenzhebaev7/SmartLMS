@@ -19,13 +19,13 @@ class ForumController extends Controller
             $query->where('section_id', $request->section_id);
         }
         $threads = $query->paginate(15)->withQueryString();
-        $sections = Section::orderBy('order')->get();
+        $sections = SectionController::dedupeSectionsForDisplay(Section::orderedForDisplay()->get());
         return view('forum.index', ['threads' => $threads, 'sections' => $sections]);
     }
 
     public function create(): View
     {
-        $sections = Section::orderBy('order')->get();
+        $sections = SectionController::dedupeSectionsForDisplay(Section::orderedForDisplay()->get());
         return view('forum.create', ['sections' => $sections]);
     }
 
@@ -77,7 +77,7 @@ class ForumController extends Controller
             abort(403, __('messages.forbidden_teacher'));
         }
         $thread->update(['hidden_at' => now()]);
-        return redirect()->route('forum.index')->with('status', __('forum.thread_hidden'));
+        return redirect()->route('forum.index')->with('status', __('messages.forum_thread_hidden'));
     }
 
     public function destroyComment(Request $request, Comment $comment): RedirectResponse
@@ -86,6 +86,6 @@ class ForumController extends Controller
             abort(403, __('messages.forbidden_teacher'));
         }
         $comment->update(['hidden_at' => now()]);
-        return redirect()->route('forum.show', $comment->thread)->with('status', __('forum.comment_hidden'));
+        return redirect()->route('forum.show', $comment->thread)->with('status', __('messages.forum_comment_hidden'));
     }
 }

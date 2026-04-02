@@ -37,10 +37,11 @@ class UserController extends Controller
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
             'role' => $data['role'],
-            'level' => in_array($data['role'], [User::ROLE_TEACHER, User::ROLE_ADMIN], true) ? null : 'none',
+            'grade' => in_array($data['role'], [User::ROLE_TEACHER, User::ROLE_ADMIN], true) ? null : 9,
+            'placement_passed' => null,
         ]);
 
-        return redirect()->route('admin.users.index')->with('status', __('admin.user_created'));
+        return redirect()->route('admin.users.index')->with('status', __('messages.admin_user_created'));
     }
 
     public function updateRole(Request $request, User $user): RedirectResponse
@@ -56,6 +57,6 @@ class UserController extends Controller
             return redirect()->route('admin.users.index')->with('error', __('admin.cannot_delete_self'));
         }
         $user->delete();
-        return redirect()->route('admin.users.index')->with('status', __('admin.user_deleted'));
+        return redirect()->route('admin.users.index')->with('status', __('messages.admin_user_deleted'));
     }
 }

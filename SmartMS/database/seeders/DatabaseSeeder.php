@@ -17,38 +17,54 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
-            'role' => User::ROLE_STUDENT,
-            'level' => 'beginner',
-        ]);
+        $testUser = User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => User::ROLE_STUDENT,
+                'grade' => 9,
+                'placement_passed' => true,
+            ]
+        );
+        if (!$testUser->wasRecentlyCreated) {
+            $testUser->update(['name' => 'Test User', 'role' => User::ROLE_STUDENT, 'grade' => 9, 'placement_passed' => true]);
+        }
 
-        User::factory()->create([
-            'name' => 'Teacher',
-            'email' => 'teacher@example.com',
-            'role' => User::ROLE_TEACHER,
-            'level' => 'advanced',
-        ]);
+        $teacher = User::firstOrCreate(
+            ['email' => 'teacher@example.com'],
+            [
+                'name' => 'Teacher',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => User::ROLE_TEACHER,
+            ]
+        );
+        if (!$teacher->wasRecentlyCreated) {
+            $teacher->update(['name' => 'Teacher', 'role' => User::ROLE_TEACHER]);
+        }
 
-        User::factory()->create([
-            'name' => 'Admin',
-            'email' => 'admin@example.com',
-            'role' => User::ROLE_ADMIN,
-            'level' => null,
-        ]);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@example.com'],
+            [
+                'name' => 'Admin',
+                'password' => \Illuminate\Support\Facades\Hash::make('password'),
+                'role' => User::ROLE_ADMIN,
+            ]
+        );
+        if (!$admin->wasRecentlyCreated) {
+            $admin->update(['name' => 'Admin', 'role' => User::ROLE_ADMIN]);
+        }
 
         $adminGmail = User::firstOrCreate(
             ['email' => 'admin@gmail.com'],
             [
                 'name' => 'Admin',
                 'role' => User::ROLE_ADMIN,
-                'level' => null,
                 'password' => \Illuminate\Support\Facades\Hash::make('password'),
             ]
         );
         if (!$adminGmail->wasRecentlyCreated) {
-            $adminGmail->update(['name' => 'Admin', 'role' => User::ROLE_ADMIN, 'level' => null]);
+            $adminGmail->update(['name' => 'Admin', 'role' => User::ROLE_ADMIN]);
         }
 
         $this->call(AchievementSeeder::class);
@@ -56,6 +72,9 @@ class DatabaseSeeder extends Seeder
         $this->call(BeginnerLessonsSeeder::class);
         $this->call(ContentSeeder::class);
         $this->call(LessonsQuizzesExtraSeeder::class);
+        $this->call(InformaticsByGradeSeeder::class);
+        $this->call(ExamQuizSeeder::class);
         $this->call(TranslationsKkSeeder::class);
+        $this->call(EnsureMinQuizQuestionsSeeder::class);
     }
 }

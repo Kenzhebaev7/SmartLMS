@@ -13,6 +13,7 @@ class Lesson extends Model
 
     protected $fillable = [
         'section_id',
+        'grade',
         'title',
         'title_kk',
         'content',

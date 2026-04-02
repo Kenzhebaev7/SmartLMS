@@ -8,7 +8,20 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Quiz extends Model
 {
-    protected $fillable = ['section_id', 'title', 'title_kk', 'passing_percent'];
+    protected $fillable = [
+        'section_id',
+        'grade',
+        'title',
+        'title_kk',
+        'passing_percent',
+        'time_limit_seconds',
+        'deadline_at',
+    ];
+
+    public function scopeExamForGrade($query, int $grade)
+    {
+        return $query->whereNull('section_id')->where('grade', $grade);
+    }
 
     public function getTitleForLocale(string $locale): string
     {
@@ -22,6 +35,8 @@ class Quiz extends Model
     {
         return [
             'passing_percent' => 'integer',
+            'time_limit_seconds' => 'integer',
+            'deadline_at' => 'datetime',
         ];
     }
 

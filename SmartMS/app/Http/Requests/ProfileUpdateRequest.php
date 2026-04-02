@@ -25,6 +25,8 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
+            // Для учеников даём возможность выбрать/изменить класс
+            'grade' => ['nullable', 'in:9,10,11'],
         ];
     }
 }

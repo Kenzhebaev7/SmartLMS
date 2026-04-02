@@ -26,7 +26,7 @@ class LessonController extends Controller
             'content_kk' => ['nullable', 'string'],
             'video_url' => ['nullable', 'string', 'max:500'],
             'video_id' => ['nullable', 'string', 'max:32'],
-            'file' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:10240'],
+            'file' => ['nullable', 'file', 'mimes:pdf,doc,docx,txt,ppt,pptx', 'max:20480'],
             'order' => ['nullable', 'integer', 'min:0'],
         ]);
 
@@ -70,7 +70,7 @@ class LessonController extends Controller
             'content_kk' => ['nullable', 'string'],
             'video_url' => ['nullable', 'string', 'max:500'],
             'video_id' => ['nullable', 'string', 'max:32'],
-            'file' => ['nullable', 'file', 'mimes:pdf,doc,docx', 'max:10240'],
+            'file' => ['nullable', 'file', 'mimes:pdf,doc,docx,txt,ppt,pptx', 'max:20480'],
             'order' => ['nullable', 'integer', 'min:0'],
         ]);
 

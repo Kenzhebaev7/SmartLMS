@@ -6,15 +6,15 @@
         <form action="{{ route('forum.comments.store', $comment->thread) }}" method="POST" class="mt-3 hidden reply-form" data-parent-id="{{ $comment->id }}">
             @csrf
             <input type="hidden" name="parent_id" value="{{ $comment->id }}">
-            <textarea name="body" rows="2" required class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="{{ __('forum.reply_placeholder') }}"></textarea>
-            <button type="submit" class="mt-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-light transition-colors">{{ __('forum.send') }}</button>
+            <textarea name="body" rows="2" required class="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm" placeholder="{{ __('messages.forum_reply_placeholder') }}"></textarea>
+            <button type="submit" class="mt-2 px-4 py-2 bg-primary text-white rounded-lg text-sm font-medium hover:bg-primary-light transition-colors">{{ __('messages.forum_send') }}</button>
         </form>
-        <button type="button" class="mt-2 text-sm text-primary hover:underline reply-btn" data-target="{{ $comment->id }}">{{ __('forum.reply') }}</button>
+        <button type="button" class="mt-2 text-sm text-primary hover:underline reply-btn" data-target="{{ $comment->id }}">{{ __('messages.forum_reply') }}</button>
         @if(in_array(auth()->user()->role, [\App\Models\User::ROLE_TEACHER, \App\Models\User::ROLE_ADMIN]))
-            <form action="{{ route('forum.comments.destroy', $comment) }}" method="POST" class="inline ml-2" onsubmit="return confirm('{{ __('forum.confirm_hide_comment') }}');">
+            <form action="{{ route('forum.comments.destroy', $comment) }}" method="POST" class="inline ml-2" onsubmit="return confirm('{{ __('messages.forum_confirm_hide_comment') }}');">
                 @csrf
                 @method('DELETE')
-                <button type="submit" class="text-sm text-amber-600 hover:text-amber-800 font-medium">{{ __('forum.hide_comment') }}</button>
+                <button type="submit" class="text-sm text-amber-600 hover:text-amber-800 font-medium">{{ __('messages.forum_hide_comment') }}</button>
             </form>
         @endif
     @endauth

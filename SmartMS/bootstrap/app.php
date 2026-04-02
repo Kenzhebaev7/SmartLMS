@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\CheckGrade;
 use App\Http\Middleware\EnsureAdmin;
 use App\Http\Middleware\EnsurePlacementCompleted;
 use App\Http\Middleware\EnsureTeacher;
@@ -19,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [SetLocale::class]);
         $middleware->alias([
             'admin' => EnsureAdmin::class,
+            'check.grade' => CheckGrade::class,
             'ensure.placement.completed' => EnsurePlacementCompleted::class,
             'teacher' => EnsureTeacher::class,
             'teacher.or.admin' => EnsureTeacherOrAdmin::class,

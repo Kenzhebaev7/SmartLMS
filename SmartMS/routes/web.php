@@ -14,10 +14,13 @@ use App\Http\Controllers\ForumController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
+use App\Http\Controllers\SearchController;
+use App\Http\Controllers\ErrorTrainerController;
 use App\Http\Controllers\LocaleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/locale/{locale}', [LocaleController::class, 'switch'])->name('locale.switch')->where('locale', 'kk|ru');
+Route::get('/lang/{locale}', [LocaleController::class, 'switch'])->name('lang.switch')->where('locale', 'kk|ru');
 
 Route::get('/', function () {
     $locale = session('locale', request()->cookie('locale', config('app.locale')));
@@ -33,18 +36,26 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/placement-test', [PlacementTestController::class, 'process'])->name('placement-test.process');
 });
 
-Route::middleware(['auth', 'ensure.placement.completed'])->group(function () {
+Route::middleware(['auth', 'ensure.placement.completed', 'check.grade'])->group(function () {
     Route::get('/dashboard', [SectionController::class, 'dashboard'])->name('dashboard');
 
     Route::get('/sections', [SectionController::class, 'index'])->name('sections.index');
     Route::get('/sections/{section}', [SectionController::class, 'show'])->name('sections.show');
 
+    Route::get('/search', [SearchController::class, 'index'])->name('search.index');
+    Route::get('/trainer/errors', [ErrorTrainerController::class, 'index'])->name('trainer.errors');
+
     Route::get('/sections/{section}/lessons/{lesson}', [LessonController::class, 'show'])->name('lessons.show');
+    Route::get('/sections/{section}/lessons/{lesson}/pdf', [LessonController::class, 'pdfHandout'])->name('lessons.pdf');
     Route::post('/sections/{section}/lessons/{lesson}/questions', [LessonController::class, 'storeQuestion'])->name('lessons.questions.store');
     Route::post('/sections/{section}/lessons/{lesson}/complete', [LessonController::class, 'complete'])->name('lessons.complete');
 
     Route::get('/sections/{section}/quiz', [QuizController::class, 'show'])->name('quiz.show');
     Route::post('/sections/{section}/quiz', [QuizController::class, 'submit'])->name('quiz.submit');
+
+    Route::get('/exam-trainer', [\App\Http\Controllers\ExamTrainerController::class, 'index'])->name('exam-trainer.index');
+    Route::get('/exam-trainer/quiz/{quiz}', [\App\Http\Controllers\ExamTrainerController::class, 'show'])->name('exam-trainer.show');
+    Route::post('/exam-trainer/quiz/{quiz}', [\App\Http\Controllers\ExamTrainerController::class, 'submit'])->name('exam-trainer.submit');
 });
 
 Route::middleware(['auth', 'teacher.or.admin'])->prefix('teacher')->name('teacher.')->group(function () {

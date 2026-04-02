@@ -15,6 +15,10 @@ class User extends Authenticatable
     public const ROLE_TEACHER = 'teacher';
     public const ROLE_ADMIN = 'admin';
 
+    public const GRADE_9 = 9;
+    public const GRADE_10 = 10;
+    public const GRADE_11 = 11;
+
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
@@ -28,8 +32,8 @@ class User extends Authenticatable
         'email',
         'password',
         'role',
-        'level',
-        'xp',
+        'grade',
+        'placement_passed',
     ];
 
     /**
@@ -52,6 +56,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'placement_passed' => 'boolean',
         ];
     }
 
@@ -100,6 +105,18 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;
+    }
+
+    /**
+     * Класс для выборки разделов/уроков курса. У ученика без grade в профиле — из конфига.
+     */
+    public function effectiveGradeForStudent(): ?int
+    {
+        if ($this->role !== self::ROLE_STUDENT) {
+            return null;
+        }
+
+        return (int) ($this->grade ?? config('smartlms.default_student_grade', 9));
     }
 
     /** Список ролей для валидации и выбора в админке */

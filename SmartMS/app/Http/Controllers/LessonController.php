@@ -6,11 +6,14 @@ use App\Models\Section;
 use App\Models\Lesson;
 use App\Models\LessonProgress;
 use App\Models\Thread;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-use Illuminate\View\View;
+use Illuminate\Support\Str;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class LessonController extends Controller
 {
@@ -19,15 +22,14 @@ class LessonController extends Controller
         $user = $request->user();
         $unlocked = SectionController::unlockedSectionIds($user);
         if (!in_array($section->id, $unlocked)) {
-            abort(403, __('sections.forbidden_level'));
+            abort(403, __('messages.sections_forbidden_level'));
         }
         if ($lesson->section_id !== $section->id) {
             abort(404);
         }
-        $lesson->refresh(); // всегда актуальные данные после правок учителя
-        // Студент уровня beginner не имеет доступа к урокам для продвинутых
-        if ($user && $user->role === \App\Models\User::ROLE_STUDENT && $user->level === 'beginner' && $lesson->is_advanced) {
-            abort(403, __('sections.forbidden_level'));
+        $lesson->refresh();
+        if ($user && $user->role === \App\Models\User::ROLE_STUDENT && $section->grade !== null && (int) $section->grade !== $user->effectiveGradeForStudent()) {
+            abort(403, __('sections.forbidden_grade'));
         }
 
         $questionThreads = Thread::where('lesson_id', $lesson->id)->with('user')->latest()->get();
@@ -84,7 +86,7 @@ class LessonController extends Controller
         if (!in_array($section->id, $unlocked) || $lesson->section_id !== $section->id) {
             abort(403);
         }
-        if ($user->role === \App\Models\User::ROLE_STUDENT && $user->level === 'beginner' && $lesson->is_advanced) {
+        if ($user->role === \App\Models\User::ROLE_STUDENT && $section->grade !== null && (int) $section->grade !== $user->effectiveGradeForStudent()) {
             abort(403);
         }
 
@@ -105,19 +107,42 @@ class LessonController extends Controller
         }
         $existed = (bool) $existing;
 
-        if (!$existed) {
-            $user->increment('xp', 10);
-        }
-
         if ($request->wantsJson()) {
             return response()->json([
                 'completed' => true,
-                'xp_awarded' => !$existed ? 10 : 0,
-                'user_xp' => $user->fresh()->xp,
             ]);
         }
 
         return redirect()->route('lessons.show', [$section, $lesson])
-            ->with('status', __('lessons.completed'));
+            ->with('status', __('messages.lessons_completed'));
+    }
+
+    public function pdfHandout(Request $request, Section $section, Lesson $lesson): StreamedResponse|RedirectResponse
+    {
+        $user = $request->user();
+        $unlocked = SectionController::unlockedSectionIds($user);
+        if (!in_array($section->id, $unlocked) || $lesson->section_id !== $section->id) {
+            abort(403);
+        }
+
+        $title = $lesson->getTitleForLocale(app()->getLocale());
+        $content = $lesson->getContentForLocale(app()->getLocale()) ?? '';
+        $body = Str::markdown($content);
+        $html = '<!DOCTYPE html><html><head><meta charset="utf-8"><style>body{font-family:DejaVu Sans,sans-serif;padding:20px;line-height:1.6;color:#333;} h1{font-size:18px;border-bottom:1px solid #ccc;padding-bottom:8px;} .content p{margin:0.5em 0;} .content ul,.content ol{margin:0.5em 0 0.5em 1.2em;} .content h2{font-size:15px;margin:1em 0 0.4em;} .content h3{font-size:13px;margin:0.8em 0 0.3em;}</style></head><body><h1>' . htmlspecialchars($title) . '</h1><div class="content">' . $body . '</div></body></html>';
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', false);
+        $dompdf = new Dompdf($options);
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+
+        $filename = Str::slug($title) . '-конспект.pdf';
+
+        return response()->streamDownload(function () use ($dompdf) {
+            echo $dompdf->output();
+        }, $filename, [
+            'Content-Type' => 'application/pdf',
+        ]);
     }
 }

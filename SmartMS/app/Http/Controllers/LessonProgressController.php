@@ -28,7 +28,7 @@ class LessonProgressController extends Controller
             ]
         );
 
-        return back()->with('status', __('Урок отмечен как пройден.'));
+        return back()->with('status', __('messages.lessons_completed'));
     }
 }
 

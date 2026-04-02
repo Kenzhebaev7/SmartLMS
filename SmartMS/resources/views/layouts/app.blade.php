@@ -65,45 +65,83 @@
 
                     @auth
                     <div class="hidden md:flex items-center gap-1">
-                        <a href="{{ route('dashboard') }}" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105 {{ request()->routeIs('dashboard') ? 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/80 hover:text-slate-900 dark:hover:text-slate-100' }}">{{ __('nav.cabinet') }}</a>
-                        <a href="{{ route('sections.index') }}" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105 {{ request()->routeIs('sections.*') ? 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/80 hover:text-slate-900 dark:hover:text-slate-100' }}">{{ __('nav.sections') }}</a>
-                        <a href="{{ route('forum.index') }}" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105 {{ request()->routeIs('forum.*') ? 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/80 hover:text-slate-900 dark:hover:text-slate-100' }}">{{ __('nav.forum') }}</a>
+                        <a href="{{ route('dashboard') }}" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105 {{ request()->routeIs('dashboard') ? 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/80 hover:text-slate-900 dark:hover:text-slate-100' }}">{{ __('messages.nav_progress') }}</a>
+                        <a href="{{ route('profile.edit') }}" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105 {{ request()->routeIs('profile.*') ? 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/80 hover:text-slate-900 dark:hover:text-slate-100' }}">{{ __('messages.nav_profile') }}</a>
+                        <a href="{{ route('sections.index') }}" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105 {{ request()->routeIs('sections.*') ? 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/80 hover:text-slate-900 dark:hover:text-slate-100' }}">{{ __('messages.nav_sections') }}</a>
+                        <a href="{{ route('exam-trainer.index') }}" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105 {{ request()->routeIs('exam-trainer.*') ? 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/80 hover:text-slate-900 dark:hover:text-slate-100' }}">{{ __('messages.nav_exam_trainer') }}</a>
+                        <a href="{{ route('forum.index') }}" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105 {{ request()->routeIs('forum.*') ? 'bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/80 hover:text-slate-900 dark:hover:text-slate-100' }}">{{ __('messages.nav_forum') }}</a>
                         @if(auth()->user() && (auth()->user()->isTeacher() || auth()->user()->isAdmin()))
-                            <a href="{{ route('teacher.dashboard') }}" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105 {{ request()->routeIs('teacher.*') ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/80' }}">{{ __('nav.teacher_cabinet') }}</a>
+                            <a href="{{ route('teacher.dashboard') }}" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105 {{ request()->routeIs('teacher.*') ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/80' }}">{{ __('messages.nav_teacher_cabinet') }}</a>
                         @endif
                         @if(auth()->user() && auth()->user()->isAdmin())
-                            <a href="{{ route('admin.dashboard') }}" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105 {{ request()->routeIs('admin.*') ? 'bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-100' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/80' }}">{{ __('nav.admin') }}</a>
+                            <a href="{{ route('admin.dashboard') }}" class="nav-link px-4 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 hover:scale-105 {{ request()->routeIs('admin.*') ? 'bg-slate-200 dark:bg-slate-700 text-slate-800 dark:text-slate-100' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700/80' }}">{{ __('messages.nav_admin') }}</a>
                         @endif
                     </div>
                     @endauth
                 </div>
 
-                <div class="flex items-center gap-2 md:gap-4">
-                    <button type="button" onclick="window.smartLmsTheme.toggleTheme()" class="btn-micro p-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white/60 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 transition-all duration-200 hover:scale-110" title="{{ __('nav.theme_light') }} / {{ __('nav.theme_dark') }}" aria-label="{{ __('nav.theme_dark') }}">
+                <div class="flex items-center gap-2 md:gap-3">
+                    <button type="button" onclick="window.smartLmsTheme.toggleTheme()" class="p-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors" title="{{ __('messages.nav_theme_light') }} / {{ __('messages.nav_theme_dark') }}" aria-label="{{ __('messages.nav_theme_dark') }}">
                         <span class="theme-icon-light hidden dark:inline"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg></span>
                         <span class="theme-icon-dark inline dark:hidden"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg></span>
                     </button>
-                    <button type="button" onclick="window.smartLmsTheme.toggleA11y()" class="btn-micro p-2 rounded-lg border border-slate-200 dark:border-slate-600 bg-white/60 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 transition-all duration-200 hover:scale-110 a11y-toggle" title="{{ __('nav.a11y') }}" aria-label="{{ __('nav.a11y') }}">
+                    <button type="button" onclick="window.smartLmsTheme.toggleA11y()" class="p-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white/70 dark:bg-slate-700/80 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors a11y-toggle" title="{{ __('messages.nav_a11y') }}" aria-label="{{ __('messages.nav_a11y') }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                     </button>
-                    <div class="flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-600 p-0.5 bg-white dark:bg-slate-700">
-                        <a href="{{ route('locale.switch', 'kk') }}" class="px-2.5 py-1.5 rounded-md text-xs font-semibold {{ app()->getLocale() === 'kk' ? 'bg-primary text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600' }}">Қаз</a>
-                        <a href="{{ route('locale.switch', 'ru') }}" class="px-2.5 py-1.5 rounded-md text-xs font-semibold {{ app()->getLocale() === 'ru' ? 'bg-primary text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600' }}">Рус</a>
+                    <div class="flex items-center gap-1 rounded-full border border-slate-200 dark:border-slate-700 px-1 py-0.5 bg-slate-50/80 dark:bg-slate-800">
+                        <a href="{{ route('lang.switch', 'kk') }}" class="px-2.5 py-1 rounded-full text-xs font-semibold {{ app()->getLocale() === 'kk' ? 'bg-primary text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Қаз</a>
+                        <a href="{{ route('lang.switch', 'ru') }}" class="px-2.5 py-1 rounded-full text-xs font-semibold {{ app()->getLocale() === 'ru' ? 'bg-primary text-white shadow-sm' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700' }}">Рус</a>
                     </div>
                     @auth
-                    <div class="hidden sm:flex items-center gap-2">
-                        <span class="text-sm font-medium text-slate-700 dark:text-slate-300 truncate max-w-[120px]">{{ auth()->user()->name }}</span>
-                        <span class="px-2.5 py-1 bg-amber-100 dark:bg-amber-900/40 border border-amber-300 dark:border-amber-600 rounded-lg text-xs font-bold text-amber-800 dark:text-amber-200">{{ auth()->user()->xp ?? 0 }} XP</span>
-                        <span class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider {{ (auth()->user()->level ?? '') === 'advanced' ? 'bg-accent-pale dark:bg-accent/20 text-accent-dark dark:text-amber-400 border border-accent-border' : 'bg-primary-100 dark:bg-primary/20 text-primary border border-primary-200 dark:border-primary/40' }}">{{ auth()->user()->level ?? 'beginner' }}</span>
+                    <div class="hidden sm:flex items-center">
+                        <x-dropdown align="right" width="56">
+                            <x-slot name="trigger">
+                                <button class="inline-flex items-center gap-2 rounded-full border border-slate-200 dark:border-slate-700 bg-white/90 dark:bg-slate-800 px-3 py-1.5 shadow-sm text-sm font-medium text-slate-800 dark:text-slate-100">
+                                    <div class="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-bold">
+                                        {{ mb_substr(auth()->user()->name, 0, 1) }}
+                                    </div>
+                                    <span class="truncate max-w-[120px]">{{ auth()->user()->name }}</span>
+                                    <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                </button>
+                            </x-slot>
+
+                            <x-slot name="content">
+                                <div class="px-4 py-3 border-b border-slate-100">
+                                    <p class="text-sm font-semibold text-slate-900 dark:text-slate-50 truncate">
+                                        {{ auth()->user()->name }}
+                                    </p>
+                                    <p class="text-xs text-slate-500 dark:text-slate-300 truncate">
+                                        {{ auth()->user()->email }}
+                                    </p>
+                                    @if(auth()->user()->role === 'student' && auth()->user()->grade)
+                                        @php $g = (int) auth()->user()->grade; @endphp
+                                        <p class="mt-2 text-xs font-medium text-slate-500 dark:text-slate-300">
+                                            {{ __('messages.auth_grade_' . $g) }}
+                                        </p>
+                                    @endif
+                                </div>
+
+                                <x-dropdown-link :href="route('profile.edit')" class="text-sm font-medium text-slate-700 dark:text-slate-200">
+                                    {{ __('messages.nav_profile') }}
+                                </x-dropdown-link>
+
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <x-dropdown-link :href="route('logout')"
+                                                     class="text-sm font-semibold text-red-600 dark:text-red-400"
+                                                     onclick="event.preventDefault(); this.closest('form').submit();">
+                                        {{ __('messages.nav_logout') }}
+                                    </x-dropdown-link>
+                                </form>
+                            </x-slot>
+                        </x-dropdown>
                     </div>
-                    <form method="POST" action="{{ route('logout') }}" class="m-0">
-                        @csrf
-                        <button type="submit" class="btn-micro text-sm font-semibold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 px-2 py-1 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/30 transition-all duration-200 hover:scale-105">{{ __('nav.logout') }}</button>
-                    </form>
                     @else
-                    <a href="{{ route('login') }}" class="text-sm font-semibold text-primary hover:text-primary-light transition-colors">{{ __('nav.login') }}</a>
+                    <a href="{{ route('login') }}" class="text-sm font-semibold text-primary hover:text-primary-light transition-colors">{{ __('messages.nav_login') }}</a>
                     @if(Route::has('register'))
-                        <a href="{{ route('register') }}" class="btn-micro px-4 py-2.5 bg-emerald-500 text-white rounded-xl font-semibold text-sm hover:bg-emerald-600 transition-all duration-200 hover:scale-105 shadow-sky-100">{{ __('nav.register') }}</a>
+                        <a href="{{ route('register') }}" class="btn-micro px-4 py-2.5 bg-emerald-500 text-white rounded-xl font-semibold text-sm hover:bg-emerald-600 transition-all duration-200 hover:scale-105 shadow-sky-100">{{ __('messages.nav_register') }}</a>
                     @endif
                     @endauth
 
@@ -118,14 +156,16 @@
             @auth
             <div id="nav-mobile-menu" class="hidden md:hidden pb-4 border-t border-slate-200/80 bg-white dark:bg-slate-900/95">
                 <div class="flex flex-col gap-1 pt-3">
-                    <a href="{{ route('dashboard') }}" class="px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('dashboard') ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-50' }}">{{ __('nav.cabinet') }}</a>
-                    <a href="{{ route('sections.index') }}" class="px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('sections.*') ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-50' }}">{{ __('nav.sections') }}</a>
-                    <a href="{{ route('forum.index') }}" class="px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('forum.*') ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-50' }}">{{ __('nav.forum') }}</a>
+                    <a href="{{ route('dashboard') }}" class="px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('dashboard') ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-50' }}">{{ __('messages.nav_progress') }}</a>
+                    <a href="{{ route('profile.edit') }}" class="px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('profile.*') ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-50' }}">{{ __('messages.nav_profile') }}</a>
+                    <a href="{{ route('sections.index') }}" class="px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('sections.*') ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-50' }}">{{ __('messages.nav_sections') }}</a>
+                    <a href="{{ route('exam-trainer.index') }}" class="px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('exam-trainer.*') ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-50' }}">{{ __('messages.nav_exam_trainer') }}</a>
+                    <a href="{{ route('forum.index') }}" class="px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('forum.*') ? 'bg-sky-50 text-sky-700' : 'text-slate-600 hover:bg-slate-50' }}">{{ __('messages.nav_forum') }}</a>
                     @if(auth()->user() && (auth()->user()->isTeacher() || auth()->user()->isAdmin()))
-                        <a href="{{ route('teacher.dashboard') }}" class="px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('teacher.*') ? 'bg-amber-50 text-amber-800' : 'text-amber-700 hover:bg-amber-50/70' }}">{{ __('nav.teacher_cabinet') }}</a>
+                        <a href="{{ route('teacher.dashboard') }}" class="px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('teacher.*') ? 'bg-amber-50 text-amber-800' : 'text-amber-700 hover:bg-amber-50/70' }}">{{ __('messages.nav_teacher_cabinet') }}</a>
                     @endif
                     @if(auth()->user() && auth()->user()->isAdmin())
-                        <a href="{{ route('admin.dashboard') }}" class="px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('admin.*') ? 'bg-slate-100 text-slate-800' : 'text-slate-600 hover:bg-slate-50' }}">{{ __('nav.admin') }}</a>
+                        <a href="{{ route('admin.dashboard') }}" class="px-4 py-3 rounded-xl text-sm font-semibold {{ request()->routeIs('admin.*') ? 'bg-slate-100 text-slate-800' : 'text-slate-600 hover:bg-slate-50' }}">{{ __('messages.nav_admin') }}</a>
                     @endif
                 </div>
             </div>
@@ -149,6 +189,28 @@
             </div>
         </header>
     @endisset
+
+    {{-- Глобальные уведомления: успех и ошибка — видны на всех страницах, можно закрыть --}}
+    @if(session('status') || session('error'))
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4" x-data="{ open: true }" x-show="open" x-transition>
+            @if(session('status'))
+                <div class="rounded-xl border px-4 py-3 flex items-center justify-between gap-4 bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-200 shadow-sm">
+                    <p class="text-sm font-medium">{{ session('status') }}</p>
+                    <button type="button" @click="open = false" class="shrink-0 p-1 rounded-lg hover:bg-emerald-200/50 dark:hover:bg-emerald-800/50 transition-colors" aria-label="{{ __('messages.nav_close') }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            @endif
+            @if(session('error'))
+                <div class="rounded-xl border px-4 py-3 flex items-center justify-between gap-4 mt-2 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200 shadow-sm">
+                    <p class="text-sm font-medium">{{ session('error') }}</p>
+                    <button type="button" @click="open = false" class="shrink-0 p-1 rounded-lg hover:bg-red-200/50 dark:hover:bg-red-800/50 transition-colors" aria-label="{{ __('messages.nav_close') }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+            @endif
+        </div>
+    @endif
 
     <main class="py-12 flex-1 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-slate-800 dark:text-slate-100">

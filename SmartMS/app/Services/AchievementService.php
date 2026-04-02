@@ -17,7 +17,6 @@ class AchievementService
             return false;
         }
         $user->achievements()->attach($achievement->id, ['awarded_at' => now()]);
-        $user->increment('xp', $achievement->xp);
         return true;
     }
 

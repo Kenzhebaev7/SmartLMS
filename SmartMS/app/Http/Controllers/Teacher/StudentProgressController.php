@@ -18,12 +18,12 @@ class StudentProgressController extends Controller
 {
     public function index(Request $request): View
     {
-        $students = User::where('role', User::ROLE_STUDENT)->whereNotNull('level')->where('level', '!=', 'none')
+        $students = User::where('role', User::ROLE_STUDENT)->whereNotNull('grade')
             ->withCount('results')
             ->orderBy('name')
             ->get();
 
-        $sections = Section::orderBy('order')->get();
+        $sections = Section::orderBy('grade')->orderByDesc('is_featured')->orderBy('order')->get();
 
         $resultsByUser = Result::where('passed', true)->get()->groupBy('user_id');
         $masters = SectionMaster::with(['user', 'section'])->get();
