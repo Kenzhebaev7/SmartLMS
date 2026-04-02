@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -27,8 +26,7 @@ return new class extends Migration
         });
 
         // Добавляем unique только если индекса ещё нет (create_lesson_progress_table уже мог его создать)
-        $indexExists = DB::select("SHOW INDEX FROM lesson_progress WHERE Key_name = 'lesson_progress_user_id_lesson_key_unique'");
-        if (empty($indexExists)) {
+        if (! Schema::hasIndex('lesson_progress', ['user_id', 'lesson_key'], 'unique')) {
             Schema::table('lesson_progress', function (Blueprint $table) {
                 $table->unique(['user_id', 'lesson_key']);
             });

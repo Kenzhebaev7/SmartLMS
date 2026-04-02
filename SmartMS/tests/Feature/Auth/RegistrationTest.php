@@ -20,12 +20,13 @@ class RegistrationTest extends TestCase
     {
         $response = $this->post('/register', [
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'email' => 'newuser@example.com',
             'password' => 'password',
             'password_confirmation' => 'password',
+            'grade' => '9',
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect(route('placement-test.show', absolute: false));
     }
 }

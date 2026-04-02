@@ -22,8 +22,7 @@ class InformaticsByGradeSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->trimSectionTitlesInDatabase();
-        $this->removeDuplicateSectionsByTitleGrade();
+        app(SectionDuplicateCleanup::class)->run();
 
         $this->seedGrade(9, $this->sectionsGrade9());
         $this->seedGrade(10, $this->sectionsGrade10());
