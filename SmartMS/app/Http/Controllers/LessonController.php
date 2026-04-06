@@ -34,6 +34,7 @@ class LessonController extends Controller
 
         $questionThreads = Thread::where('lesson_id', $lesson->id)->with('user')->latest()->get();
 
+        $section->loadMissing('quiz');
         $lessonsOrdered = $section->lessons()->orderBy('order')->get();
         $currentIndex = $lessonsOrdered->search(fn ($l) => $l->id === $lesson->id);
         $prevLesson = $currentIndex > 0 ? $lessonsOrdered->get($currentIndex - 1) : null;

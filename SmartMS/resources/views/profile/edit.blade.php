@@ -45,8 +45,42 @@
                     </div>
                 </div>
 
-                @if(isset($sections) && isset($progressBySection) && auth()->user()?->role === \App\Models\User::ROLE_STUDENT)
+                @if(auth()->user()?->role === \App\Models\User::ROLE_STUDENT)
                     <div class="space-y-4">
+                        @if(isset($certificates) && count($certificates) > 0)
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100">
+                                    {{ __('messages.profile_certificates_title') }}
+                                </h3>
+                                <p class="text-sm text-slate-600 dark:text-slate-400">
+                                    {{ __('messages.profile_certificates_desc') }}
+                                </p>
+                            </div>
+
+                            <div class="space-y-3 max-h-[260px] overflow-y-auto pr-1">
+                                @foreach($certificates as $certificate)
+                                    <div class="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
+                                        <p class="text-sm font-semibold text-slate-800 dark:text-slate-100">{{ $certificate->title }}</p>
+                                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                                            @if($certificate->awarded_at)
+                                                {{ $certificate->awarded_at->format('d.m.Y') }}
+                                            @endif
+                                            @if($certificate->teacher)
+                                                · {{ __('messages.profile_certificate_teacher', ['teacher' => $certificate->teacher->name]) }}
+                                            @endif
+                                        </p>
+                                        @if($certificate->description)
+                                            <p class="mt-2 text-sm text-slate-600 dark:text-slate-300">{{ $certificate->description }}</p>
+                                        @endif
+                                        <a href="{{ asset('storage/' . $certificate->file_path) }}" target="_blank" rel="noopener" class="mt-3 inline-flex items-center px-4 py-2 rounded-lg bg-emerald-600 text-white text-sm font-semibold hover:bg-emerald-700 transition-colors">
+                                            {{ __('messages.profile_open_certificate') }}
+                                        </a>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        @if(isset($sections) && isset($progressBySection))
                         <div>
                             <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100">
                                 {{ __('messages.profile_progress_title') }}
@@ -79,6 +113,7 @@
                                 </a>
                             @endforeach
                         </div>
+                        @endif
 
                         <div class="mt-4 p-4 rounded-xl border border-red-100 bg-red-50/70">
                             @include('profile.partials.delete-user-form')

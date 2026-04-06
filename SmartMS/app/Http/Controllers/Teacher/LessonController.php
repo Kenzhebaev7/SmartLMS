@@ -26,6 +26,8 @@ class LessonController extends Controller
             'content_kk' => ['nullable', 'string'],
             'video_url' => ['nullable', 'string', 'max:500'],
             'video_id' => ['nullable', 'string', 'max:32'],
+            'video_url_kk' => ['nullable', 'string', 'max:500'],
+            'video_id_kk' => ['nullable', 'string', 'max:32'],
             'file' => ['nullable', 'file', 'mimes:pdf,doc,docx,txt,ppt,pptx', 'max:20480'],
             'order' => ['nullable', 'integer', 'min:0'],
         ]);
@@ -35,19 +37,18 @@ class LessonController extends Controller
             $path = $request->file('file')->store('lessons', 'public');
         }
 
-        $videoId = $data['video_id'] ?? null;
-        $videoUrl = $data['video_url'] ?? null;
-        if (empty($videoId) && !empty($videoUrl) && preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', $videoUrl, $m)) {
-            $videoId = $m[1];
-        }
+        $ru = $this->normalizeVideoPair($data['video_id'] ?? null, $data['video_url'] ?? null);
+        $kk = $this->normalizeVideoPair($data['video_id_kk'] ?? null, $data['video_url_kk'] ?? null);
 
         $section->lessons()->create([
             'title' => $data['title'],
             'title_kk' => $data['title_kk'] ?? null,
             'content' => $data['content'] ?? '',
             'content_kk' => $data['content_kk'] ?? null,
-            'video_url' => $videoUrl,
-            'video_id' => $videoId,
+            'video_url' => $ru['url'],
+            'video_id' => $ru['id'],
+            'video_url_kk' => $kk['url'],
+            'video_id_kk' => $kk['id'],
             'file_path' => $path,
             'order' => $data['order'] ?? ($section->lessons()->max('order') + 1),
         ]);
@@ -70,6 +71,8 @@ class LessonController extends Controller
             'content_kk' => ['nullable', 'string'],
             'video_url' => ['nullable', 'string', 'max:500'],
             'video_id' => ['nullable', 'string', 'max:32'],
+            'video_url_kk' => ['nullable', 'string', 'max:500'],
+            'video_id_kk' => ['nullable', 'string', 'max:32'],
             'file' => ['nullable', 'file', 'mimes:pdf,doc,docx,txt,ppt,pptx', 'max:20480'],
             'order' => ['nullable', 'integer', 'min:0'],
         ]);
@@ -80,19 +83,18 @@ class LessonController extends Controller
             $path = $request->file('file')->store('lessons', 'public');
         }
 
-        $videoId = $data['video_id'] ?? null;
-        $videoUrl = $data['video_url'] ?? null;
-        if (empty($videoId) && !empty($videoUrl) && preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', $videoUrl, $m)) {
-            $videoId = $m[1];
-        }
+        $ru = $this->normalizeVideoPair($data['video_id'] ?? null, $data['video_url'] ?? null);
+        $kk = $this->normalizeVideoPair($data['video_id_kk'] ?? null, $data['video_url_kk'] ?? null);
 
         $lesson->update([
             'title' => $data['title'],
             'title_kk' => $data['title_kk'] ?? null,
             'content' => $data['content'] ?? '',
             'content_kk' => $data['content_kk'] ?? null,
-            'video_url' => $videoUrl,
-            'video_id' => $videoId,
+            'video_url' => $ru['url'],
+            'video_id' => $ru['id'],
+            'video_url_kk' => $kk['url'],
+            'video_id_kk' => $kk['id'],
             'file_path' => $path,
             'order' => $data['order'] ?? $lesson->order,
         ]);
@@ -108,5 +110,32 @@ class LessonController extends Controller
         }
         $lesson->delete();
         return redirect()->route('teacher.sections.show', $section)->with('status', 'Урок удалён.');
+    }
+
+    /**
+     * @return array{id: ?string, url: ?string}
+     */
+    private function normalizeVideoPair(?string $idRaw, ?string $urlRaw): array
+    {
+        $idRaw = $this->trimToNull($idRaw);
+        $urlRaw = $this->trimToNull($urlRaw);
+        $extracted = Lesson::extractYoutubeVideoId($idRaw) ?? Lesson::extractYoutubeVideoId($urlRaw);
+        $id = $extracted ?? $idRaw;
+        $url = $urlRaw;
+        if ($extracted !== null && $url === null) {
+            $url = 'https://www.youtube.com/watch?v='.$extracted;
+        }
+
+        return ['id' => $id, 'url' => $url];
+    }
+
+    private function trimToNull(?string $v): ?string
+    {
+        if ($v === null) {
+            return null;
+        }
+        $t = trim($v);
+
+        return $t === '' ? null : $t;
     }
 }

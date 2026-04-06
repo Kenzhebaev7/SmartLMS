@@ -92,6 +92,16 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
+    public function certificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class, 'user_id')->latest('awarded_at')->latest();
+    }
+
+    public function issuedCertificates(): HasMany
+    {
+        return $this->hasMany(Certificate::class, 'teacher_id')->latest();
+    }
+
     public function isTeacher(): bool
     {
         return $this->role === self::ROLE_TEACHER;
@@ -105,6 +115,25 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === self::ROLE_ADMIN;
+    }
+
+    public function placementLevelKey(): ?string
+    {
+        if ($this->role !== self::ROLE_STUDENT || $this->placement_passed === null) {
+            return null;
+        }
+
+        return $this->placement_passed ? 'advanced' : 'beginner';
+    }
+
+    public function isPlacementBeginner(): bool
+    {
+        return $this->placementLevelKey() === 'beginner';
+    }
+
+    public function isPlacementAdvanced(): bool
+    {
+        return $this->placementLevelKey() === 'advanced';
     }
 
     /**

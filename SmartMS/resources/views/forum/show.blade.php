@@ -1,5 +1,5 @@
 <x-app-layout>
-    <x-slot name="header">Форум — SmartLMS</x-slot>
+    <x-slot name="header">{{ __('messages.forum_title_projects') }}</x-slot>
 
     @if(session('status'))
         <div class="mb-6 rounded-xl bg-primary-50 border border-primary-200 px-4 py-3 text-primary-light">{{ session('status') }}</div>
@@ -8,6 +8,13 @@
     <div class="mb-6 p-6 rounded-xl border border-gray-200 bg-white">
         <h2 class="text-xl font-bold text-slate-800">{{ $thread->title }}</h2>
         <p class="text-sm text-gray-500 mt-1">{{ $thread->user->name }} · {{ $thread->created_at->format('d.m.Y H:i') }}</p>
+        <p class="text-sm text-slate-500 mt-2">
+            @if($thread->section)
+                {{ __('messages.forum_thread_in_project', ['section' => $thread->section->getTitleForLocale(app()->getLocale())]) }}
+            @else
+                {{ __('messages.forum_thread_general') }}
+            @endif
+        </p>
         <div class="mt-4 text-slate-700 whitespace-pre-wrap">{{ $thread->body }}</div>
         @auth
             @if(in_array(auth()->user()->role, [\App\Models\User::ROLE_TEACHER, \App\Models\User::ROLE_ADMIN]))
@@ -33,7 +40,7 @@
         <label class="block text-sm font-medium text-slate-700 mb-1">{{ __('messages.forum_your_comment') }}</label>
         <textarea name="body" rows="3" required class="w-full rounded-lg border border-gray-300 px-4 py-2"></textarea>
         @error('body')<p class="text-red-600 text-sm mt-1">{{ $message }}</p>@enderror
-        <button type="submit" class="mt-3 px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary-light transition-colors">Отправить</button>
+        <button type="submit" class="mt-3 px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary-light transition-colors">{{ __('messages.forum_send') }}</button>
     </form>
 
     <div class="mt-6">

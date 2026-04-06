@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\PlacementTestController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\LessonController;
@@ -10,6 +11,7 @@ use App\Http\Controllers\Teacher\SectionController as TeacherSectionController;
 use App\Http\Controllers\Teacher\LessonController as TeacherLessonController;
 use App\Http\Controllers\Teacher\QuizController as TeacherQuizController;
 use App\Http\Controllers\Teacher\StudentProgressController;
+use App\Http\Controllers\Teacher\CertificateController as TeacherCertificateController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
@@ -65,6 +67,9 @@ Route::middleware(['auth', 'teacher.or.admin'])->prefix('teacher')->name('teache
     Route::get('sections/{section}/quiz', [TeacherQuizController::class, 'edit'])->name('sections.quiz.edit');
     Route::put('sections/{section}/quiz', [TeacherQuizController::class, 'update'])->name('sections.quiz.update');
     Route::get('progress', [StudentProgressController::class, 'index'])->name('progress.index');
+    Route::get('certificates', [TeacherCertificateController::class, 'index'])->name('certificates.index');
+    Route::post('certificates', [TeacherCertificateController::class, 'store'])->name('certificates.store');
+    Route::delete('certificates/{certificate}', [TeacherCertificateController::class, 'destroy'])->name('certificates.destroy');
     Route::post('progress/master', [StudentProgressController::class, 'assignMaster'])->name('progress.master');
     Route::post('progress/feedback', [StudentProgressController::class, 'storeFeedback'])->name('progress.feedback');
     Route::post('students/{student}/achievements', [StudentProgressController::class, 'awardAchievement'])->name('students.achievements.award');
@@ -95,6 +100,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::get('/certificates', [CertificateController::class, 'index'])->name('certificates.index');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });

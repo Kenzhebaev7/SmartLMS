@@ -1,9 +1,24 @@
 <x-app-layout>
     <x-slot name="header">{{ $section->getTitleForLocale(app()->getLocale()) }} — SmartLMS</x-slot>
 
+    @php
+        $student = auth()->user();
+        $levelKey = $student?->placementLevelKey();
+        $trackLabel = $section->is_revision ? __('messages.dashboard_level_beginner') : __('messages.dashboard_level_advanced');
+        $sectionGradeLabel = $section->grade ? __('messages.auth_grade_' . $section->grade) : __('messages.teacher_grade_all');
+    @endphp
+
     @if(session('status'))
         <div class="mb-6 rounded-xl bg-primary-50 border border-primary-200 px-4 py-3 text-primary-light">{{ session('status') }}</div>
     @endif
+
+    <div class="mb-6 flex flex-wrap items-center gap-2">
+        <span class="inline-flex items-center px-3 py-1.5 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200">{{ $sectionGradeLabel }}</span>
+        <span class="inline-flex items-center px-3 py-1.5 rounded-full {{ $section->is_revision ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-700' : 'bg-violet-100 dark:bg-violet-900/30 text-violet-800 dark:text-violet-200 border border-violet-200 dark:border-violet-700' }} text-sm font-semibold">{{ $trackLabel }}</span>
+        @if($levelKey)
+            <span class="text-sm text-slate-500 dark:text-slate-400">{{ __('messages.sections_student_track', ['level' => __('messages.dashboard_level_' . $levelKey)]) }}</span>
+        @endif
+    </div>
 
     @if(!empty($sectionPassed))
         <div class="mb-6 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 border-2 border-emerald-200 dark:border-emerald-700 p-6">
@@ -50,6 +65,7 @@
     @if($section->quiz)
         <div class="mt-8 pt-8 border-t border-slate-200 dark:border-slate-600">
             <p class="text-sm text-slate-600 dark:text-slate-400 mb-3">{{ __('messages.sections_quiz_unlock_hint') }}</p>
+            <p class="text-sm text-slate-600 dark:text-slate-400 mb-4">{{ __('messages.sections_quiz_requirement_notice') }}</p>
             <a href="{{ route('quiz.show', $section) }}" class="inline-flex items-center px-6 py-3 bg-accent text-white rounded-xl font-semibold hover:bg-accent-dark transition-colors">
                 {{ __('messages.sections_to_quiz') }}
             </a>

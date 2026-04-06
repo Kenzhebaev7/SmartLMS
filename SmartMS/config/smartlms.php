@@ -29,4 +29,16 @@ return [
     'ide_cpp_section_ids' => array_map('intval', array_filter(explode(',', env('IDE_CPP_SECTION_IDS', '')))),
     'ide_python_section_ids' => array_map('intval', array_filter(explode(',', env('IDE_PYTHON_SECTION_IDS', '')))),
 
+    /*
+    |--------------------------------------------------------------------------
+    | Встраиваемые онлайн-компиляторы (iframe)
+    |--------------------------------------------------------------------------
+    | Раньше использовались OnlineGDB/Trinket; часть URL устарела (404).
+    | По умолчанию — OneCompiler (iframe без sandbox, иначе редактор может не работать).
+    */
+    'ide_cpp_embed_url' => env('IDE_CPP_EMBED_URL', 'https://onecompiler.com/embed/cpp?theme=dark&hideLanguageSelection=true'),
+    'ide_python_embed_url' => env('IDE_PYTHON_EMBED_URL', 'https://onecompiler.com/embed/python?theme=dark&hideLanguageSelection=true'),
+    'ide_cpp_open_url' => env('IDE_CPP_OPEN_URL', 'https://onecompiler.com/cpp'),
+    'ide_python_open_url' => env('IDE_PYTHON_OPEN_URL', 'https://onecompiler.com/python'),
+
 ];

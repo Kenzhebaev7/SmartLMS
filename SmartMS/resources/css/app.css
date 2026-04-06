@@ -132,6 +132,49 @@ select {
         transform-origin: center;
         transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
+
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+}
+
+@layer components {
+    .nav-main-link {
+        @apply inline-flex items-center px-4 py-2 rounded-md text-sm font-medium text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors duration-200 whitespace-nowrap;
+    }
+
+    .nav-main-link-active {
+        @apply bg-slate-100 text-slate-900;
+    }
+
+    .nav-main-link-active-emerald {
+        @apply bg-slate-100 text-slate-900;
+    }
+
+    .nav-main-link-active-amber {
+        @apply bg-slate-100 text-slate-900;
+    }
+
+    .nav-main-link-active-slate {
+        @apply bg-slate-100 text-slate-900;
+    }
+
+    .nav-status-card-mobile {
+        @apply flex flex-col rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2;
+    }
+
+    .nav-status-label {
+        @apply text-[10px] uppercase tracking-[0.18em] font-bold text-slate-400;
+    }
+
+    .nav-status-value {
+        @apply mt-1 text-sm font-semibold text-slate-800 leading-tight;
+    }
 }
 
 /* Белый фон только в светлой теме; тёмная — один цвет снизу доверху */
@@ -144,4 +187,26 @@ html.dark body,
 html.dark body .min-h-screen,
 html.dark main {
     background-color: #0f172a !important;
+}
+
+.dark .nav-main-link {
+    color: #cbd5e1 !important;
+}
+
+.dark .nav-main-link:hover {
+    background-color: rgba(30, 41, 59, 0.95) !important;
+    color: #f8fafc !important;
+}
+
+.dark .nav-main-link-active,
+.dark .nav-main-link-active-emerald,
+.dark .nav-main-link-active-amber,
+.dark .nav-main-link-active-slate {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+}
+
+.dark .nav-status-card-mobile {
+    background-color: rgba(15, 23, 42, 0.72) !important;
+    border-color: #334155 !important;
 }

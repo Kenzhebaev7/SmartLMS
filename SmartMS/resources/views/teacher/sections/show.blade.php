@@ -5,6 +5,10 @@
         <div class="mb-6 rounded-xl bg-primary-50 border border-primary-200 px-4 py-3 text-primary-light">{{ session('status') }}</div>
     @endif
 
+    <div class="mb-6 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-700">
+        {{ __('messages.teacher_section_target_summary', ['grade' => $section->grade ? __('messages.auth_grade_' . $section->grade) : __('messages.teacher_grade_all'), 'level' => $section->is_revision ? __('messages.dashboard_level_beginner') : __('messages.dashboard_level_advanced')]) }}
+    </div>
+
     <div class="flex gap-4 mb-8">
         <a href="{{ route('teacher.sections.lessons.create', $section) }}" class="px-6 py-3 bg-primary text-white rounded-xl font-semibold hover:bg-primary-light transition-colors">{{ __('messages.teacher_add_lesson') }}</a>
         <a href="{{ route('teacher.sections.quiz.edit', $section) }}" class="px-6 py-3 bg-accent text-white rounded-xl font-semibold hover:bg-accent-dark transition-colors">{{ __('messages.teacher_section_quiz') }}</a>
@@ -14,7 +18,10 @@
     <div class="space-y-3">
         @foreach($section->lessons ?? [] as $lesson)
             <div class="flex items-center justify-between p-4 rounded-xl border border-gray-200 bg-white">
-                <span class="font-semibold text-slate-800 dark:text-slate-100">{{ $lesson->getTitleForLocale(app()->getLocale()) }}</span>
+                <div>
+                    <span class="font-semibold text-slate-800 dark:text-slate-100">{{ $lesson->getTitleForLocale(app()->getLocale()) }}</span>
+                    <p class="text-sm text-slate-500">{{ __('messages.teacher_lesson_target_summary', ['grade' => $section->grade ? __('messages.auth_grade_' . $section->grade) : __('messages.teacher_grade_all'), 'level' => $section->is_revision ? __('messages.dashboard_level_beginner') : __('messages.dashboard_level_advanced')]) }}</p>
+                </div>
                 <div class="flex gap-2">
                     <a href="{{ route('teacher.lessons.edit', $lesson) }}" class="px-4 py-2 text-primary font-medium hover:bg-primary-pale rounded-lg">{{ __('messages.teacher_edit_lesson') }}</a>
                     <form action="{{ route('teacher.lessons.destroy', $lesson) }}" method="POST" onsubmit="return confirm('{{ __('messages.teacher_delete_confirm') }}');">

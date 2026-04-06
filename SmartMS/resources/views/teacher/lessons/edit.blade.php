@@ -4,6 +4,9 @@
     <form action="{{ route('teacher.lessons.update', $lesson) }}" method="POST" enctype="multipart/form-data" class="max-w-xl space-y-4">
         @csrf
         @method('PUT')
+        <div class="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
+            {{ __('messages.teacher_lesson_context_hint', ['grade' => $lesson->section->grade ? __('messages.auth_grade_' . $lesson->section->grade) : __('messages.teacher_grade_all'), 'level' => $lesson->section->is_revision ? __('messages.dashboard_level_beginner') : __('messages.dashboard_level_advanced')]) }}
+        </div>
         <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">{{ __('messages.teacher_title') }}</label>
             <input type="text" name="title" value="{{ old('title', $lesson->title) }}" required class="w-full rounded-lg border border-gray-300 px-4 py-2">
@@ -20,13 +23,23 @@
         </div>
         <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{{ __('messages.teacher_video_url') }}</label>
-            <input type="url" name="video_url" value="{{ old('video_url', $lesson->video_url) }}" placeholder="{{ __('messages.teacher_placeholder_video_url') }}" class="w-full rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-4 py-2">
+            <input type="text" name="video_url" value="{{ old('video_url', $lesson->video_url) }}" placeholder="{{ __('messages.teacher_placeholder_video_url') }}" autocomplete="off" class="w-full rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-4 py-2">
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ __('messages.teacher_video_url_hint') }}</p>
         </div>
         <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{{ __('messages.teacher_video_id') }}</label>
-            <input type="text" name="video_id" value="{{ old('video_id', $lesson->video_id) }}" placeholder="{{ __('messages.teacher_placeholder_video_id') }}" class="w-full rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-4 py-2">
+            <input type="text" name="video_id" value="{{ old('video_id', $lesson->video_id) }}" placeholder="{{ __('messages.teacher_placeholder_video_id') }}" autocomplete="off" class="w-full rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-4 py-2">
             <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ __('messages.teacher_video_id_hint') }}</p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{{ __('messages.teacher_video_url_kk') }}</label>
+            <input type="text" name="video_url_kk" value="{{ old('video_url_kk', $lesson->video_url_kk) }}" placeholder="{{ __('messages.teacher_placeholder_video_url') }}" autocomplete="off" class="w-full rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-4 py-2">
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ __('messages.teacher_video_url_kk_hint') }}</p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{{ __('messages.teacher_video_id_kk') }}</label>
+            <input type="text" name="video_id_kk" value="{{ old('video_id_kk', $lesson->video_id_kk) }}" placeholder="{{ __('messages.teacher_placeholder_video_id') }}" autocomplete="off" class="w-full rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-4 py-2">
+            <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">{{ __('messages.teacher_video_id_kk_hint') }}</p>
         </div>
         <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{{ __('messages.teacher_file') }}</label>

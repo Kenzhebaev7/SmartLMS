@@ -6,17 +6,28 @@
             {!! \Illuminate\Support\Str::markdown($lesson->getContentForLocale(app()->getLocale()) ?? '') !!}
         </div>
 
-        @if($lesson->video_url ?? $lesson->video_id)
+        @php
+            $loc = app()->getLocale();
+            $embedUrl = $lesson->youtubeEmbedUrlForLocale($loc);
+            $watchUrl = $lesson->youtubeWatchUrlForLocale($loc);
+            $otherUrl = $lesson->nonYoutubeVideoUrlForLocale($loc);
+            $showVideoBlock = $lesson->hasVideoDataForLocale($loc);
+        @endphp
+        @if($showVideoBlock)
             <div class="mb-8">
                 <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100 mb-2">{{ __('messages.lessons_video') }}</h3>
-                @php
-                    $embed = $lesson->video_id
-                        ? 'https://www.youtube.com/embed/' . $lesson->video_id
-                        : (preg_match('/(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]+)/', $lesson->video_url ?? '', $m) ? 'https://www.youtube.com/embed/' . $m[1] : ($lesson->video_url ?? ''));
-                @endphp
-                <div class="aspect-video w-full rounded-xl overflow-hidden bg-black">
-                    <iframe class="w-full h-full" src="{{ $embed }}" title="{{ $lesson->getTitleForLocale(app()->getLocale()) }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-                </div>
+                @if($embedUrl)
+                    <div class="aspect-video w-full rounded-xl overflow-hidden bg-black">
+                        <iframe class="w-full h-full" src="{{ $embedUrl }}" title="{{ $lesson->getTitleForLocale($loc) }}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen loading="lazy"></iframe>
+                    </div>
+                    @if($watchUrl)
+                        <p class="mt-2 text-sm text-slate-500"><a href="{{ $watchUrl }}" target="_blank" rel="noopener noreferrer" class="text-sky-600 font-medium hover:underline">{{ __('messages.lessons_video_open_on_youtube') }}</a></p>
+                    @endif
+                @elseif($otherUrl)
+                    <a href="{{ $otherUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center px-4 py-2 bg-sky-600 text-white rounded-lg hover:bg-sky-700">{{ __('messages.lessons_video_open_external') }}</a>
+                @else
+                    <p class="text-amber-800 dark:text-amber-200 text-sm">{{ __('messages.lessons_video_unavailable') }}</p>
+                @endif
             </div>
         @endif
 

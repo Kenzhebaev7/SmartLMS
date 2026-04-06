@@ -29,7 +29,7 @@
         @foreach($threads ?? [] as $thread)
             <a href="{{ route('forum.show', $thread) }}" class="block p-4 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 hover:border-primary dark:hover:border-primary/50 hover:bg-primary-pale dark:hover:bg-slate-700 transition-colors">
                 <h3 class="font-bold text-slate-800 dark:text-slate-100">{{ $thread->title }}</h3>
-                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ $thread->user->name }} · {{ $thread->created_at->format('d.m.Y H:i') }}@if($thread->section) · {{ $thread->section->getTitleForLocale(app()->getLocale()) }}@endif</p>
+                <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ $thread->user->name }} · {{ $thread->created_at->format('d.m.Y H:i') }}@if($thread->section) · {{ __('messages.forum_thread_in_project', ['section' => $thread->section->getTitleForLocale(app()->getLocale())]) }}@else · {{ __('messages.forum_thread_general') }}@endif</p>
             </a>
         @endforeach
     </div>

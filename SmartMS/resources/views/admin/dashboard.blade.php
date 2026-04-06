@@ -5,7 +5,33 @@
         <div class="mb-6 rounded-xl bg-primary-50 border border-primary-200 px-4 py-3 text-primary-light">{{ session('status') }}</div>
     @endif
 
-    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-8">
+    <div class="mb-8 grid gap-4 lg:grid-cols-[1.2fr_0.9fr]">
+        <div class="rounded-[28px] border border-slate-200 dark:border-slate-700 bg-gradient-to-br from-white via-slate-50 to-sky-50/60 dark:from-slate-800 dark:via-slate-800 dark:to-slate-900 p-6 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 mb-3">{{ __('messages.admin_workspace_label') }}</p>
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">{{ __('messages.admin_workspace_title') }}</h2>
+            <p class="text-sm text-slate-600 dark:text-slate-300 max-w-2xl">{{ __('messages.admin_workspace_desc') }}</p>
+        </div>
+
+        <div class="rounded-[28px] border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 shadow-sm">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400 mb-4">{{ __('messages.admin_quick_actions') }}</p>
+            <div class="grid gap-3">
+                <a href="{{ route('admin.users.index') }}" class="rounded-2xl border border-slate-200 dark:border-slate-700 px-4 py-4 hover:border-sky-300 hover:bg-sky-50/70 dark:hover:bg-slate-700 transition-colors">
+                    <p class="font-semibold text-slate-900 dark:text-slate-100">{{ __('messages.admin_manage_users') }}</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ __('messages.admin_block_users') }}</p>
+                </a>
+                <a href="{{ route('teacher.sections.index') }}" class="rounded-2xl border border-slate-200 dark:border-slate-700 px-4 py-4 hover:border-amber-300 hover:bg-amber-50/70 dark:hover:bg-slate-700 transition-colors">
+                    <p class="font-semibold text-slate-900 dark:text-slate-100">{{ __('messages.admin_manage_content') }}</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ __('messages.admin_block_content') }}</p>
+                </a>
+                <a href="{{ route('admin.settings.index') }}" class="rounded-2xl border border-slate-200 dark:border-slate-700 px-4 py-4 hover:border-slate-300 hover:bg-slate-50/70 dark:hover:bg-slate-700 transition-colors">
+                    <p class="font-semibold text-slate-900 dark:text-slate-100">{{ __('messages.admin_settings') }}</p>
+                    <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">{{ __('messages.admin_block_settings') }}</p>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4 mb-8">
         <div class="p-6 rounded-2xl border-2 border-slate-200 bg-white">
             <p class="text-sm text-slate-500">{{ __('messages.admin_users') }}</p>
             <p class="text-2xl font-bold text-slate-800">{{ $stats['users'] ?? 0 }}</p>
@@ -29,6 +55,10 @@
         <div class="p-6 rounded-2xl border-2 border-slate-200 bg-white">
             <p class="text-sm text-slate-500">{{ __('messages.admin_quiz_attempts') }}</p>
             <p class="text-2xl font-bold text-slate-800">{{ $stats['quiz_attempts'] ?? 0 }}</p>
+        </div>
+        <div class="p-6 rounded-2xl border-2 border-slate-200 bg-white">
+            <p class="text-sm text-slate-500">{{ __('messages.teacher_certificates_title') }}</p>
+            <p class="text-2xl font-bold text-slate-800">{{ $stats['certificates'] ?? 0 }}</p>
         </div>
     </div>
 

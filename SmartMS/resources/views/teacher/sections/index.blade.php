@@ -16,6 +16,9 @@
                 <div>
                     <span class="font-semibold text-slate-800 dark:text-slate-100">{{ $section->getTitleForLocale(app()->getLocale()) }}</span>
                     <span class="text-sm text-gray-500 ml-2">{{ __('messages.teacher_order_short') }}: {{ $section->order }}</span>
+                    <p class="mt-1 text-sm text-slate-500">
+                        {{ __('messages.teacher_section_target_summary', ['grade' => $section->grade ? __('messages.auth_grade_' . $section->grade) : __('messages.teacher_grade_all'), 'level' => $section->is_revision ? __('messages.dashboard_level_beginner') : __('messages.dashboard_level_advanced')]) }}
+                    </p>
                 </div>
                 <div class="flex gap-2">
                     <a href="{{ route('teacher.sections.show', $section) }}" class="px-4 py-2 text-primary font-medium hover:bg-primary-pale rounded-lg">{{ __('messages.teacher_open') }}</a>

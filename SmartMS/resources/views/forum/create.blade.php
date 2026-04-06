@@ -3,12 +3,15 @@
 
     <form action="{{ route('forum.store') }}" method="POST" class="max-w-xl space-y-4">
         @csrf
+        <div class="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
+            {{ __('messages.forum_create_hint') }}
+        </div>
         <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{{ __('messages.forum_section_project') }}</label>
             <select name="section_id" class="w-full rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-4 py-2">
                 <option value="">{{ __('messages.forum_all_projects') }}</option>
                 @foreach($sections ?? [] as $s)
-                    <option value="{{ $s->id }}" {{ old('section_id') == $s->id ? 'selected' : '' }}>{{ $s->title }}</option>
+                    <option value="{{ $s->id }}" {{ old('section_id') == $s->id ? 'selected' : '' }}>{{ $s->getTitleForLocale(app()->getLocale()) }}</option>
                 @endforeach
             </select>
         </div>

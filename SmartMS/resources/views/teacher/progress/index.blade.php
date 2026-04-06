@@ -10,6 +10,8 @@
             <thead class="bg-gray-50 dark:bg-slate-700">
                 <tr>
                     <th class="px-4 py-3 text-left text-sm font-semibold text-slate-800 dark:text-slate-100">{{ __('messages.teacher_student') }}</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-800 dark:text-slate-100">{{ __('messages.dashboard_grade') }}</th>
+                    <th class="px-4 py-3 text-left text-sm font-semibold text-slate-800 dark:text-slate-100">{{ __('messages.dashboard_level') }}</th>
                     @foreach($sections ?? [] as $s)
                         <th class="px-4 py-3 text-left text-sm font-semibold text-slate-800 dark:text-slate-100">{{ $s->title }}</th>
                     @endforeach
@@ -22,6 +24,8 @@
                 @foreach($students ?? [] as $student)
                     <tr class="border-t border-gray-200">
                         <td class="px-4 py-3 font-medium text-slate-800 dark:text-slate-100">{{ $student->name }}</td>
+                        <td class="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{{ $student->grade ? __('messages.auth_grade_' . $student->grade) : '—' }}</td>
+                        <td class="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">{{ $student->placementLevelKey() ? __('messages.dashboard_level_' . $student->placementLevelKey()) : __('messages.teacher_level_pending') }}</td>
                         @foreach($sections ?? [] as $s)
                             @php
                                 $quiz = $s->quiz;

@@ -4,6 +4,9 @@
     <form action="{{ route('teacher.sections.quiz.update', $section) }}" method="POST" class="max-w-2xl space-y-6">
         @csrf
         @method('PUT')
+        <div class="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
+            {{ __('messages.teacher_quiz_context_hint', ['grade' => $section->grade ? __('messages.auth_grade_' . $section->grade) : __('messages.teacher_grade_all'), 'level' => $section->is_revision ? __('messages.dashboard_level_beginner') : __('messages.dashboard_level_advanced')]) }}
+        </div>
         <div>
             <label class="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">{{ __('messages.teacher_quiz_title_label') }} (RU)</label>
             <input type="text" name="title" value="{{ old('title', $quiz->title) }}" required class="w-full rounded-lg border border-gray-300 dark:border-slate-600 dark:bg-slate-700 dark:text-slate-100 px-4 py-2">

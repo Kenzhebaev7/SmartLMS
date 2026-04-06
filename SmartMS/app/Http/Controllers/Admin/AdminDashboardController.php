@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Certificate;
 use App\Models\Result;
 use App\Models\Section;
 use App\Models\Thread;
@@ -20,6 +21,7 @@ class AdminDashboardController extends Controller
             'sections' => Section::count(),
             'threads' => Thread::count(),
             'quiz_attempts' => Result::count(),
+            'certificates' => Certificate::count(),
         ];
         return view('admin.dashboard', ['stats' => $stats]);
     }

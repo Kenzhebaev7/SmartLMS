@@ -1,12 +1,27 @@
 <x-app-layout>
     <x-slot name="header">{{ __('messages.quiz_title', ['section' => $section->getTitleForLocale(app()->getLocale())]) }}</x-slot>
 
+    @php
+        $student = auth()->user();
+        $levelKey = $student?->placementLevelKey();
+        $sectionTrackLabel = $section->is_revision ? __('messages.dashboard_level_beginner') : __('messages.dashboard_level_advanced');
+        $sectionGradeLabel = $section->grade ? __('messages.auth_grade_' . $section->grade) : __('messages.teacher_grade_all');
+    @endphp
+
     @if(session('failed'))
         <div class="mb-6 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 px-4 py-3 text-amber-800 dark:text-amber-200">
             {{ session('message') }}
             <p class="mt-2 font-semibold">{{ __('messages.quiz_try_again') }}</p>
         </div>
     @endif
+
+    <div class="mb-6 rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/90 dark:bg-slate-800/70 px-5 py-4">
+        <div class="flex flex-wrap items-center gap-2 mb-2">
+            <span class="inline-flex items-center px-3 py-1 rounded-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sm font-semibold text-slate-700 dark:text-slate-200">{{ $sectionGradeLabel }}</span>
+            <span class="inline-flex items-center px-3 py-1 rounded-full {{ $section->is_revision ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-200 border border-amber-200 dark:border-amber-700' : 'bg-violet-100 dark:bg-violet-900/30 text-violet-800 dark:text-violet-200 border border-violet-200 dark:border-violet-700' }} text-sm font-semibold">{{ $sectionTrackLabel }}</span>
+        </div>
+        <p class="text-sm text-slate-600 dark:text-slate-300">{{ __('messages.quiz_progression_hint', ['section' => $section->getTitleForLocale(app()->getLocale()), 'level' => $levelKey ? __('messages.dashboard_level_' . $levelKey) : $sectionTrackLabel]) }}</p>
+    </div>
 
     @if(($timeLimitSeconds ?? null) || ($deadlineAt ?? null))
         <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-3">

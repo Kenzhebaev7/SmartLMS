@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\ProfileUpdateRequest;
 use App\Http\Controllers\SectionController;
+use App\Models\Certificate;
 use App\Models\LessonProgress;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,6 +43,9 @@ class ProfileController extends Controller
             'user' => $user,
             'sections' => $sections,
             'progressBySection' => $progressBySection,
+            'certificates' => $user && $user->role === \App\Models\User::ROLE_STUDENT
+                ? Certificate::where('user_id', $user->id)->with('teacher')->latest('awarded_at')->latest()->get()
+                : collect(),
         ]);
     }
 

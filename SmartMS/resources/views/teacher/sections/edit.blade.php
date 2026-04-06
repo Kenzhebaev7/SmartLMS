@@ -4,6 +4,9 @@
     <form action="{{ route('teacher.sections.update', $section) }}" method="POST" class="max-w-xl space-y-4">
         @csrf
         @method('PUT')
+        <div class="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-sky-900">
+            {{ __('messages.teacher_edit_targeting_hint') }}
+        </div>
         <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">{{ __('messages.teacher_title') }}</label>
             <input type="text" name="title" value="{{ old('title', $section->title) }}" required class="w-full rounded-lg border border-gray-300 px-4 py-2">
@@ -30,6 +33,7 @@
                 <input type="checkbox" name="is_revision" value="1" {{ old('is_revision', $section->is_revision) ? 'checked' : '' }} class="rounded border-gray-300">
                 <span class="text-sm text-slate-700">{{ __('messages.teacher_is_revision') }}</span>
             </label>
+            <p class="mt-2 text-xs text-slate-500">{{ __('messages.teacher_revision_hint') }}</p>
         </div>
         <div>
             <label class="block text-sm font-medium text-slate-700 mb-1">{{ __('messages.teacher_order') }}</label>
