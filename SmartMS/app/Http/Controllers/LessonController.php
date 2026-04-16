@@ -28,18 +28,39 @@ class LessonController extends Controller
             abort(404);
         }
         $lesson->refresh();
+        if ($user && $user->role === \App\Models\User::ROLE_STUDENT && !SectionController::isLessonUnlockedForStudent($user, $lesson)) {
+            abort(403, __('messages.lessons_locked_until_previous'));
+        }
         if ($user && $user->role === \App\Models\User::ROLE_STUDENT && $section->grade !== null && (int) $section->grade !== $user->effectiveGradeForStudent()) {
-            abort(403, __('sections.forbidden_grade'));
+            abort(403, __('messages.sections_forbidden_grade'));
         }
 
         $questionThreads = Thread::where('lesson_id', $lesson->id)->with('user')->latest()->get();
 
         $section->loadMissing('quiz');
-        $lessonsOrdered = $section->lessons()->orderBy('order')->get();
+        $lessonsOrdered = Lesson::dedupeForDisplay($section->lessons()->with('unlockAfterLesson')->orderBy('order')->get())->values();
         $currentIndex = $lessonsOrdered->search(fn ($l) => $l->id === $lesson->id);
         $prevLesson = $currentIndex > 0 ? $lessonsOrdered->get($currentIndex - 1) : null;
-        $nextLesson = $currentIndex !== false && $currentIndex < $lessonsOrdered->count() - 1
-            ? $lessonsOrdered->get($currentIndex + 1) : null;
+        $nextLesson = null;
+        $lockedNextLesson = null;
+
+        if ($currentIndex !== false) {
+            for ($index = $currentIndex + 1; $index < $lessonsOrdered->count(); $index++) {
+                $candidate = $lessonsOrdered->get($index);
+                if (!$candidate) {
+                    continue;
+                }
+
+                if (!$user || $user->role !== \App\Models\User::ROLE_STUDENT || SectionController::isLessonUnlockedForStudent($user, $candidate)) {
+                    $nextLesson = $candidate;
+                    break;
+                }
+
+                if ($lockedNextLesson === null) {
+                    $lockedNextLesson = $candidate;
+                }
+            }
+        }
 
         $lessonCompleted = $user && LessonProgress::where('user_id', $user->id)
             ->where(function ($q) use ($lesson) {
@@ -53,6 +74,7 @@ class LessonController extends Controller
                 'questionThreads' => $questionThreads,
                 'prevLesson' => $prevLesson,
                 'nextLesson' => $nextLesson,
+                'lockedNextLesson' => $lockedNextLesson,
                 'lessonCompleted' => $lessonCompleted,
             ])
             ->header('Cache-Control', 'no-store, no-cache, must-revalidate');
@@ -86,6 +108,9 @@ class LessonController extends Controller
         $unlocked = SectionController::unlockedSectionIds($user);
         if (!in_array($section->id, $unlocked) || $lesson->section_id !== $section->id) {
             abort(403);
+        }
+        if ($user->role === \App\Models\User::ROLE_STUDENT && !SectionController::isLessonUnlockedForStudent($user, $lesson)) {
+            abort(403, __('messages.lessons_locked_until_previous'));
         }
         if ($user->role === \App\Models\User::ROLE_STUDENT && $section->grade !== null && (int) $section->grade !== $user->effectiveGradeForStudent()) {
             abort(403);

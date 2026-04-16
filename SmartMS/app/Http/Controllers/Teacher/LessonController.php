@@ -3,10 +3,10 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Models\Section;
 use App\Models\Lesson;
-use Illuminate\Http\Request;
+use App\Models\Section;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -14,7 +14,10 @@ class LessonController extends Controller
 {
     public function create(Section $section): View
     {
-        return view('teacher.lessons.create', ['section' => $section]);
+        return view('teacher.lessons.create', [
+            'section' => $section,
+            'availableLessons' => $section->lessons()->orderBy('order')->get(),
+        ]);
     }
 
     public function store(Request $request, Section $section): RedirectResponse
@@ -30,7 +33,17 @@ class LessonController extends Controller
             'video_id_kk' => ['nullable', 'string', 'max:32'],
             'file' => ['nullable', 'file', 'mimes:pdf,doc,docx,txt,ppt,pptx', 'max:20480'],
             'order' => ['nullable', 'integer', 'min:0'],
+            'unlock_after_lesson_id' => ['nullable', 'integer', 'exists:lessons,id'],
         ]);
+
+        if (!empty($data['unlock_after_lesson_id'])) {
+            $prerequisiteLesson = Lesson::findOrFail($data['unlock_after_lesson_id']);
+            if ((int) $prerequisiteLesson->section_id !== (int) $section->id) {
+                return back()->withErrors([
+                    'unlock_after_lesson_id' => __('messages.teacher_unlock_after_invalid'),
+                ])->withInput();
+            }
+        }
 
         $path = null;
         if ($request->hasFile('file')) {
@@ -50,16 +63,25 @@ class LessonController extends Controller
             'video_url_kk' => $kk['url'],
             'video_id_kk' => $kk['id'],
             'file_path' => $path,
-            'order' => $data['order'] ?? ($section->lessons()->max('order') + 1),
+            'order' => $data['order'] ?? (($section->lessons()->max('order') ?? 0) + 1),
+            'unlock_after_lesson_id' => $data['unlock_after_lesson_id'] ?? null,
         ]);
 
-        return redirect()->route('teacher.sections.show', $section)->with('status', __('messages.lesson_added'));
+        return redirect()->route('teacher.sections.show', $section)
+            ->with('status', __('messages.lesson_added'));
     }
 
     public function edit(Lesson $lesson): View
     {
         $lesson->load('section');
-        return view('teacher.lessons.edit', ['lesson' => $lesson]);
+
+        return view('teacher.lessons.edit', [
+            'lesson' => $lesson,
+            'availableLessons' => $lesson->section->lessons()
+                ->whereKeyNot($lesson->id)
+                ->orderBy('order')
+                ->get(),
+        ]);
     }
 
     public function update(Request $request, Lesson $lesson): RedirectResponse
@@ -75,11 +97,27 @@ class LessonController extends Controller
             'video_id_kk' => ['nullable', 'string', 'max:32'],
             'file' => ['nullable', 'file', 'mimes:pdf,doc,docx,txt,ppt,pptx', 'max:20480'],
             'order' => ['nullable', 'integer', 'min:0'],
+            'unlock_after_lesson_id' => ['nullable', 'integer', 'exists:lessons,id'],
         ]);
+
+        if (!empty($data['unlock_after_lesson_id'])) {
+            $prerequisiteLesson = Lesson::findOrFail($data['unlock_after_lesson_id']);
+            if (
+                (int) $prerequisiteLesson->section_id !== (int) $lesson->section_id
+                || (int) $prerequisiteLesson->id === (int) $lesson->id
+            ) {
+                return back()->withErrors([
+                    'unlock_after_lesson_id' => __('messages.teacher_unlock_after_invalid'),
+                ])->withInput();
+            }
+        }
 
         $path = $lesson->file_path;
         if ($request->hasFile('file')) {
-            if ($path) Storage::disk('public')->delete($path);
+            if ($path) {
+                Storage::disk('public')->delete($path);
+            }
+
             $path = $request->file('file')->store('lessons', 'public');
         }
 
@@ -97,19 +135,25 @@ class LessonController extends Controller
             'video_id_kk' => $kk['id'],
             'file_path' => $path,
             'order' => $data['order'] ?? $lesson->order,
+            'unlock_after_lesson_id' => $data['unlock_after_lesson_id'] ?? null,
         ]);
 
-        return redirect()->route('teacher.sections.show', $lesson->section)->with('status', __('messages.lesson_updated'));
+        return redirect()->route('teacher.sections.show', $lesson->section)
+            ->with('status', __('messages.lesson_updated'));
     }
 
     public function destroy(Lesson $lesson): RedirectResponse
     {
         $section = $lesson->section;
+
         if ($lesson->file_path) {
             Storage::disk('public')->delete($lesson->file_path);
         }
+
         $lesson->delete();
-        return redirect()->route('teacher.sections.show', $section)->with('status', 'Урок удалён.');
+
+        return redirect()->route('teacher.sections.show', $section)
+            ->with('status', __('messages.lesson_deleted'));
     }
 
     /**
@@ -122,6 +166,7 @@ class LessonController extends Controller
         $extracted = Lesson::extractYoutubeVideoId($idRaw) ?? Lesson::extractYoutubeVideoId($urlRaw);
         $id = $extracted ?? $idRaw;
         $url = $urlRaw;
+
         if ($extracted !== null && $url === null) {
             $url = 'https://www.youtube.com/watch?v='.$extracted;
         }
@@ -129,13 +174,14 @@ class LessonController extends Controller
         return ['id' => $id, 'url' => $url];
     }
 
-    private function trimToNull(?string $v): ?string
+    private function trimToNull(?string $value): ?string
     {
-        if ($v === null) {
+        if ($value === null) {
             return null;
         }
-        $t = trim($v);
 
-        return $t === '' ? null : $t;
+        $trimmed = trim($value);
+
+        return $trimmed === '' ? null : $trimmed;
     }
 }

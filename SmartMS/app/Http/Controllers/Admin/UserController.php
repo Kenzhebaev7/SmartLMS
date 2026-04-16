@@ -12,10 +12,26 @@ use Illuminate\View\View;
 
 class UserController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $users = User::latest()->paginate(20);
-        return view('admin.users.index', ['users' => $users]);
+        $query = User::query()->withCount(['lessonProgresses', 'results'])->latest();
+
+        if ($request->filled('role') && in_array($request->string('role')->toString(), User::roles(), true)) {
+            $query->where('role', $request->string('role')->toString());
+        }
+
+        $users = $query->paginate(20)->withQueryString();
+
+        return view('admin.users.index', [
+            'users' => $users,
+            'roleFilter' => $request->string('role')->toString(),
+            'stats' => [
+                'all' => User::count(),
+                'students' => User::where('role', User::ROLE_STUDENT)->count(),
+                'teachers' => User::where('role', User::ROLE_TEACHER)->count(),
+                'admins' => User::where('role', User::ROLE_ADMIN)->count(),
+            ],
+        ]);
     }
 
     public function create(): View

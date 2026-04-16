@@ -103,7 +103,7 @@
                         </a>
                     </div>
 
-                    <div class="mt-10 grid gap-4 sm:grid-cols-3">
+                <div class="mt-10 grid gap-4 lg:grid-cols-3">
                         <div class="rounded-[26px] bg-white/92 p-5 shadow-sm ring-1 ring-slate-200 dark:bg-slate-900 dark:ring-slate-800">
                             <p class="text-xs font-bold uppercase tracking-[0.18em] text-slate-400">{{ __('messages.welcome_stat_levels') }}</p>
                             <p class="mt-3 text-3xl font-black text-slate-950 dark:text-white">2</p>

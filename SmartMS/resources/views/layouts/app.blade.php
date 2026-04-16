@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" class="h-full">
 <head>
     <meta charset="utf-8">
@@ -63,14 +63,14 @@
                             <span class="block text-lg md:text-xl font-bold text-primary tracking-tight leading-none">SmartLMS</span>
                             @auth
                                 @if(auth()->user()->isStudent())
-                                    <p class="hidden md:block text-xs text-slate-500 truncate mt-1">
+                                    <p class="hidden md:block text-xs text-slate-500 mt-1 text-fit">
                                         {{ $navPanel['gradeLabel'] ?? '' }}
-                                        @if(!empty($navPanel['levelLabel'])) · {{ $navPanel['levelLabel'] }} @endif
+                                        @if(!empty($navPanel['levelLabel'])) / {{ $navPanel['levelLabel'] }} @endif
                                     </p>
                                 @elseif(auth()->user()->isTeacher())
-                                    <p class="hidden md:block text-xs text-slate-500 truncate mt-1">{{ __('messages.nav_teacher_home') }}</p>
+                                    <p class="hidden md:block text-xs text-slate-500 mt-1 text-fit">{{ __('messages.nav_teacher_home') }}</p>
                                 @elseif(auth()->user()->isAdmin())
-                                    <p class="hidden md:block text-xs text-slate-500 truncate mt-1">{{ __('messages.nav_admin_home') }}</p>
+                                    <p class="hidden md:block text-xs text-slate-500 mt-1 text-fit">{{ __('messages.nav_admin_home') }}</p>
                                 @endif
                             @endauth
                         </div>
@@ -98,8 +98,8 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
                     </button>
                     <div class="flex items-center gap-1 rounded-lg border border-slate-200 dark:border-slate-700 px-1 py-0.5 bg-white dark:bg-slate-800">
-                        <a href="{{ route('lang.switch', 'kk') }}" class="px-2.5 py-1 rounded-md text-xs font-semibold {{ app()->getLocale() === 'kk' ? 'bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' }}">Қаз</a>
-                        <a href="{{ route('lang.switch', 'ru') }}" class="px-2.5 py-1 rounded-md text-xs font-semibold {{ app()->getLocale() === 'ru' ? 'bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' }}">Рус</a>
+                        <a href="{{ route('lang.switch', 'kk') }}" class="px-2.5 py-1 rounded-md text-xs font-semibold {{ app()->getLocale() === 'kk' ? 'bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' }}">KZ</a>
+                        <a href="{{ route('lang.switch', 'ru') }}" class="px-2.5 py-1 rounded-md text-xs font-semibold {{ app()->getLocale() === 'ru' ? 'bg-slate-100 dark:bg-slate-700 text-slate-900 dark:text-white' : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700' }}">RU</a>
                     </div>
                     @auth
                     <a href="{{ $navPanel['notificationsRoute'] ?? route('dashboard') }}" class="relative hidden sm:inline-flex items-center justify-center w-10 h-10 rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors" title="{{ __('messages.nav_notifications') }}">
@@ -119,7 +119,7 @@
                     <div class="hidden sm:flex items-center">
                         <x-dropdown align="right" width="56">
                             <x-slot name="trigger">
-                                <button class="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-sm font-medium text-slate-800 dark:text-slate-100 max-w-[170px]">
+                                <button class="inline-flex items-center gap-2 rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1.5 text-sm font-medium text-slate-800 dark:text-slate-100 max-w-[220px]">
                                     <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-100 flex items-center justify-center text-xs font-bold">
                                         {{ mb_substr(auth()->user()->name, 0, 1) }}
                                     </div>
@@ -186,8 +186,8 @@
                     @if(auth()->user()->isStudent())
                         <span class="text-sm text-slate-500 truncate">
                             {{ $navPanel['gradeLabel'] ?? '' }}
-                            @if(!empty($navPanel['levelLabel'])) · {{ $navPanel['levelLabel'] }} @endif
-                            @if(!empty($navPanel['progressLabel'])) · {{ $navPanel['progressLabel'] }} @endif
+                            @if(!empty($navPanel['levelLabel'])) / {{ $navPanel['levelLabel'] }} @endif
+                            @if(!empty($navPanel['progressLabel'])) / {{ $navPanel['progressLabel'] }} @endif
                         </span>
                     @elseif(auth()->user()->isTeacher())
                         <span class="text-sm text-slate-500 truncate">{{ $navPanel['progressLabel'] ?? __('messages.teacher_progress') }}</span>
@@ -224,15 +224,15 @@
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 text-left">
                             <div class="nav-status-card-mobile">
                                 <span class="nav-status-label">{{ __('messages.dashboard_grade') }}</span>
-                                <span class="nav-status-value">{{ $navPanel['gradeLabel'] ?? '—' }}</span>
+                                <span class="nav-status-value">{{ $navPanel['gradeLabel'] ?? '-' }}</span>
                             </div>
                             <div class="nav-status-card-mobile">
                                 <span class="nav-status-label">{{ __('messages.dashboard_level') }}</span>
-                                <span class="nav-status-value">{{ $navPanel['levelLabel'] ?? '—' }}</span>
+                                <span class="nav-status-value">{{ $navPanel['levelLabel'] ?? '-' }}</span>
                             </div>
                             <div class="nav-status-card-mobile">
                                 <span class="nav-status-label">{{ __('messages.nav_progress') }}</span>
-                                <span class="nav-status-value">{{ $navPanel['progressLabel'] ?? '—' }}</span>
+                                <span class="nav-status-value">{{ $navPanel['progressLabel'] ?? '-' }}</span>
                             </div>
                         </div>
                     </div>
@@ -287,7 +287,7 @@
         </header>
     @endisset
 
-    {{-- Глобальные уведомления: успех и ошибка — видны на всех страницах, можно закрыть --}}
+    {{-- Р“Р»РѕР±Р°Р»СЊРЅС‹Рµ СѓРІРµРґРѕРјР»РµРЅРёСЏ: СѓСЃРїРµС… Рё РѕС€РёР±РєР° - РІРёРґРЅС‹ РЅР° РІСЃРµС… СЃС‚СЂР°РЅРёС†Р°С…, РјРѕР¶РЅРѕ Р·Р°РєСЂС‹С‚СЊ --}}
     @if(session('status') || session('error'))
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4" x-data="{ open: true }" x-show="open" x-transition>
             @if(session('status'))
@@ -329,3 +329,6 @@
     @stack('scripts')
 </body>
 </html>
+
+
+

@@ -63,7 +63,9 @@ Route::middleware(['auth', 'ensure.placement.completed', 'check.grade'])->group(
 Route::middleware(['auth', 'teacher.or.admin'])->prefix('teacher')->name('teacher.')->group(function () {
     Route::get('/dashboard', [TeacherDashboardController::class, 'index'])->name('dashboard');
     Route::resource('sections', TeacherSectionController::class);
-    Route::resource('sections.lessons', TeacherLessonController::class)->shallow();
+    Route::resource('sections.lessons', TeacherLessonController::class)
+        ->only(['create', 'store', 'edit', 'update', 'destroy'])
+        ->shallow();
     Route::get('sections/{section}/quiz', [TeacherQuizController::class, 'edit'])->name('sections.quiz.edit');
     Route::put('sections/{section}/quiz', [TeacherQuizController::class, 'update'])->name('sections.quiz.update');
     Route::get('progress', [StudentProgressController::class, 'index'])->name('progress.index');
@@ -85,6 +87,7 @@ Route::middleware(['auth', 'ensure.placement.completed'])->group(function () {
 
 Route::middleware('auth')->group(function () {
     Route::delete('/forum/threads/{thread}', [ForumController::class, 'destroyThread'])->name('forum.threads.destroy');
+    Route::patch('/forum/threads/{thread}/pin', [ForumController::class, 'togglePin'])->name('forum.threads.pin');
     Route::delete('/forum/comments/{comment}', [ForumController::class, 'destroyComment'])->name('forum.comments.destroy');
 });
 

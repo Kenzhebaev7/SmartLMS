@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Collection;
 
 class Lesson extends Model
 {
@@ -25,6 +26,7 @@ class Lesson extends Model
         'file_path',
         'is_advanced',
         'order',
+        'unlock_after_lesson_id',
     ];
 
     public function getTitleForLocale(string $locale): string
@@ -41,6 +43,30 @@ class Lesson extends Model
             return $this->content_kk;
         }
         return $this->content;
+    }
+
+    public static function normalizeTitleString(string $title): string
+    {
+        $title = preg_replace('/\s+/u', ' ', trim($title));
+
+        return mb_strtolower($title, 'UTF-8');
+    }
+
+    public function dedupeKey(): string
+    {
+        return ($this->section_id ?? '0').'|'.self::normalizeTitleString((string) ($this->title ?? ''));
+    }
+
+    public static function dedupeForDisplay(Collection $lessons): Collection
+    {
+        return $lessons
+            ->sortBy([
+                fn (Lesson $lesson) => $lesson->order,
+                fn (Lesson $lesson) => $lesson->id,
+            ])
+            ->values()
+            ->unique(fn (Lesson $lesson) => $lesson->dedupeKey())
+            ->values();
     }
 
     /**
@@ -161,6 +187,11 @@ class Lesson extends Model
         return $this->belongsTo(Section::class);
     }
 
+    public function unlockAfterLesson(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'unlock_after_lesson_id');
+    }
+
     public function threads(): HasMany
     {
         return $this->hasMany(Thread::class);
@@ -169,5 +200,10 @@ class Lesson extends Model
     public function lessonProgress(): HasMany
     {
         return $this->hasMany(LessonProgress::class);
+    }
+
+    public function unlockedLessons(): HasMany
+    {
+        return $this->hasMany(self::class, 'unlock_after_lesson_id');
     }
 }

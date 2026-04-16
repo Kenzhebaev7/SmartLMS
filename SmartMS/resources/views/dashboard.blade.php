@@ -20,6 +20,10 @@
         $nextActionDescription = $recommendedSection
             ? __('messages.dashboard_recommended_card_desc', ['title' => $recommendedSection->getTitleForLocale(app()->getLocale())])
             : __('messages.dashboard_open_program_desc');
+        $totalLessons = $sectionsCollection->sum(fn ($section) => $section->lessons->count());
+        $completedLessonsTotal = collect($progressBySection ?? [])->sum(fn ($meta) => is_array($meta) ? ($meta['completed'] ?? 0) : 0);
+        $quizCount = $sectionsCollection->filter(fn ($section) => $section->quiz)->count();
+        $timelineSections = $sectionsCollection->take(4);
     @endphp
 
     @if(session('status'))
@@ -55,23 +59,23 @@
                         {{ __('messages.dashboard_student_subtitle') }}
                     </p>
 
-                    <div class="mt-6 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                        <div class="rounded-2xl border border-white bg-white/90 px-4 py-4 shadow-sm">
+                    <div class="mt-6 grid gap-3 sm:grid-cols-2 2xl:grid-cols-4">
+                        <div class="rounded-2xl border border-white bg-white/90 px-4 py-4 shadow-sm text-fit">
                             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{{ __('messages.dashboard_completed') }}</p>
                             <p class="mt-2 text-3xl font-bold text-slate-900">{{ $sectionsPassedCount }}</p>
                             <p class="mt-1 text-sm text-slate-500">{{ __('messages.dashboard_sections_passed_short', ['total' => $sectionsTotal]) }}</p>
                         </div>
-                        <div class="rounded-2xl border border-white bg-white/90 px-4 py-4 shadow-sm">
+                        <div class="rounded-2xl border border-white bg-white/90 px-4 py-4 shadow-sm text-fit">
                             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{{ __('messages.dashboard_available_now') }}</p>
                             <p class="mt-2 text-3xl font-bold text-slate-900">{{ $unlockedCount }}</p>
                             <p class="mt-1 text-sm text-slate-500">{{ __('messages.dashboard_open_sections_now') }}</p>
                         </div>
-                        <div class="rounded-2xl border border-white bg-white/90 px-4 py-4 shadow-sm">
+                        <div class="rounded-2xl border border-white bg-white/90 px-4 py-4 shadow-sm text-fit">
                             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{{ __('messages.nav_certificates') }}</p>
                             <p class="mt-2 text-3xl font-bold text-slate-900">{{ $certificateCount }}</p>
                             <p class="mt-1 text-sm text-slate-500">{{ __('messages.dashboard_certificates_short') }}</p>
                         </div>
-                        <div class="rounded-2xl border border-white bg-white/90 px-4 py-4 shadow-sm">
+                        <div class="rounded-2xl border border-white bg-white/90 px-4 py-4 shadow-sm text-fit">
                             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{{ __('messages.dashboard_achievements') }}</p>
                             <p class="mt-2 text-3xl font-bold text-slate-900">{{ $achievementCount }}</p>
                             <p class="mt-1 text-sm text-slate-500">{{ __('messages.dashboard_achievements_short') }}</p>
@@ -116,7 +120,7 @@
 
                     <div class="rounded-[28px] border border-slate-200 bg-white/95 p-5 shadow-sm">
                         <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{{ __('messages.dashboard_quick_actions') }}</p>
-                        <div class="mt-4 grid gap-3 sm:grid-cols-3">
+                        <div class="mt-4 grid gap-3 lg:grid-cols-3">
                             <a href="{{ route('sections.index') }}" class="rounded-2xl border border-slate-200 px-4 py-4 transition hover:border-slate-300 hover:bg-slate-50">
                                 <p class="font-semibold text-slate-900">{{ __('messages.dashboard_open_program') }}</p>
                                 <p class="mt-1 text-sm text-slate-500">{{ __('messages.dashboard_open_program_desc') }}</p>
@@ -151,10 +155,10 @@
                     <div class="rounded-2xl bg-slate-50 p-4 border border-slate-200">
                         <p class="text-sm font-semibold text-slate-900">{{ __('messages.dashboard_map_current_track') }}</p>
                         <p class="mt-1 text-sm text-slate-600">
-                            {{ __('messages.dashboard_track_summary', ['grade' => __('messages.auth_grade_' . $gradeValue), 'level' => $levelKey ? __('messages.dashboard_level_' . $levelKey) : '—']) }}
+                            {{ __('messages.dashboard_track_summary', ['grade' => __('messages.auth_grade_' . $gradeValue), 'level' => $levelKey ? __('messages.dashboard_level_' . $levelKey) : '-']) }}
                         </p>
                     </div>
-                    <div class="grid grid-cols-3 gap-3">
+                    <div class="grid gap-3 sm:grid-cols-3">
                         <div class="rounded-2xl border border-slate-200 p-4">
                             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{{ __('messages.dashboard_map_done') }}</p>
                             <p class="mt-2 text-2xl font-bold text-slate-900">{{ $sectionsPassedCount }}</p>
@@ -203,6 +207,82 @@
             </div>
         </section>
 
+        <section class="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
+            <div class="rounded-[28px] border border-slate-200 bg-white p-6 shadow-sm">
+                <div class="flex items-center justify-between gap-3">
+                    <div>
+                        <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{{ __('messages.dashboard_next_step') }}</p>
+                        <h3 class="mt-2 text-xl font-bold text-slate-900">{{ __('messages.dashboard_timeline_title') }}</h3>
+                    </div>
+                    <span class="inline-flex items-center rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-semibold text-slate-600">
+                        {{ __('messages.dashboard_route_label') }}
+                    </span>
+                </div>
+
+                <div class="mt-6 space-y-4">
+                    @foreach($timelineSections as $timelineSection)
+                        @php
+                            $timelineMeta = $progressBySection[$timelineSection->id] ?? ['percent' => 0, 'completed' => 0, 'total' => 0];
+                            $timelineUnlocked = in_array($timelineSection->id, $unlockedIds);
+                            $timelineDone = $timelineUnlocked
+                                ? \App\Http\Controllers\SectionController::isSectionCompletedByStudent($student, $timelineSection, is_array($timelineMeta) ? $timelineMeta : null)
+                                : false;
+                        @endphp
+                        <div class="flex items-start gap-4">
+                            <div class="mt-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl {{ $timelineDone ? 'bg-emerald-100 text-emerald-800' : ($timelineUnlocked ? 'bg-sky-100 text-sky-800' : 'bg-slate-100 text-slate-500') }} text-sm font-bold">
+                                {{ $loop->iteration }}
+                            </div>
+                            <div class="min-w-0 flex-1 rounded-2xl border border-slate-200 bg-slate-50/70 px-4 py-4">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <p class="font-semibold text-slate-900">{{ $timelineSection->getTitleForLocale(app()->getLocale()) }}</p>
+                                    <span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold {{ $timelineDone ? 'bg-emerald-100 text-emerald-800' : ($timelineUnlocked ? 'bg-sky-100 text-sky-800' : 'bg-slate-100 text-slate-500') }}">
+                                        {{ $timelineDone ? __('messages.dashboard_filter_done') : ($timelineUnlocked ? __('messages.dashboard_filter_active') : __('messages.dashboard_filter_locked')) }}
+                                    </span>
+                                </div>
+                                <p class="mt-1 text-sm text-slate-500">
+                                    {{ __('messages.dashboard_card_progress_line', ['completed' => is_array($timelineMeta) ? ($timelineMeta['completed'] ?? 0) : 0, 'total' => is_array($timelineMeta) ? ($timelineMeta['total'] ?? 0) : 0]) }}
+                                </p>
+                            </div>
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="rounded-[28px] border border-slate-200 bg-gradient-to-br from-white to-sky-50/60 p-6 shadow-sm">
+                <p class="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">{{ __('messages.dashboard_student_hub') }}</p>
+                <h3 class="mt-2 text-xl font-bold text-slate-900">{{ __('messages.dashboard_stats_title') }}</h3>
+                <p class="mt-2 text-sm text-slate-600">{{ __('messages.dashboard_stats_desc') }}</p>
+
+                <div class="mt-5 grid gap-3 lg:grid-cols-3">
+                    <div class="rounded-2xl border border-white bg-white/90 p-4 shadow-sm">
+                        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{{ __('messages.teacher_lessons') }}</p>
+                        <p class="mt-2 text-2xl font-bold text-slate-900">{{ $totalLessons }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-white bg-white/90 p-4 shadow-sm">
+                        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{{ __('messages.teacher_lessons_completed') }}</p>
+                        <p class="mt-2 text-2xl font-bold text-slate-900">{{ $completedLessonsTotal }}</p>
+                    </div>
+                    <div class="rounded-2xl border border-white bg-white/90 p-4 shadow-sm">
+                        <p class="text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">{{ __('messages.teacher_section_quiz') }}</p>
+                        <p class="mt-2 text-2xl font-bold text-slate-900">{{ $quizCount }}</p>
+                    </div>
+                </div>
+
+                <div class="mt-5 rounded-2xl border border-slate-200 bg-white p-4">
+                    <p class="text-sm font-semibold text-slate-900">{{ __('messages.dashboard_certificate_focus_title') }}</p>
+                    <p class="mt-1 text-sm text-slate-500">{{ __('messages.dashboard_certificate_focus_desc') }}</p>
+                    <div class="mt-4 flex flex-wrap gap-3">
+                        <a href="{{ route('certificates.index') }}" class="inline-flex items-center justify-center rounded-2xl bg-slate-900 px-4 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
+                            {{ __('messages.dashboard_open_certificates') }}
+                        </a>
+                        <a href="{{ route('profile.edit') }}" class="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                            {{ __('messages.dashboard_achievements') }}
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <section>
             <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div>
@@ -234,8 +314,8 @@
                         $progress = is_array($progressMeta) ? ($progressMeta['percent'] ?? 0) : 0;
                         $completedLessons = is_array($progressMeta) ? ($progressMeta['completed'] ?? 0) : 0;
                         $totalLessons = is_array($progressMeta) ? ($progressMeta['total'] ?? 0) : 0;
-                        $sectionPassed = $unlocked && isset($section->quiz) && $section->quiz
-                            ? $student->results()->where('quiz_id', $section->quiz->id)->where('passed', true)->exists()
+                        $sectionPassed = $unlocked
+                            ? \App\Http\Controllers\SectionController::isSectionCompletedByStudent($student, $section, is_array($progressMeta) ? $progressMeta : null)
                             : false;
                         $statusKey = !$unlocked ? 'locked' : ($sectionPassed ? 'done' : 'active');
                         $sectionGrade = (int) ($section->grade ?: $gradeValue);
@@ -243,6 +323,9 @@
                         $cardBorder = !$unlocked
                             ? 'border-slate-200 bg-slate-50/80'
                             : ($sectionPassed ? 'border-emerald-200 bg-emerald-50/50' : 'border-sky-200 bg-white');
+                        if ($sectionPassed && $totalLessons > 0) {
+                            $progress = 100;
+                        }
                     @endphp
 
                     <div

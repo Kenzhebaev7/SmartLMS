@@ -3,36 +3,84 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Models\User;
+use App\Http\Controllers\SectionController as StudentSectionController;
+use App\Models\Achievement;
+use App\Models\Lesson;
+use App\Models\Result;
 use App\Models\Section;
 use App\Models\SectionMaster;
-use App\Models\Result;
 use App\Models\TeacherFeedback;
-use App\Models\Achievement;
+use App\Models\User;
 use App\Services\AchievementService;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class StudentProgressController extends Controller
 {
     public function index(Request $request): View
     {
-        $students = User::where('role', User::ROLE_STUDENT)->whereNotNull('grade')
+        $students = User::where('role', User::ROLE_STUDENT)
             ->withCount('results')
             ->orderBy('name')
             ->get();
 
-        $sections = Section::orderBy('grade')->orderByDesc('is_featured')->orderBy('order')->get();
+        $sections = Section::with(['quiz', 'lessons'])
+            ->orderBy('grade')
+            ->orderByDesc('is_featured')
+            ->orderBy('order')
+            ->get();
 
         $resultsByUser = Result::where('passed', true)->get()->groupBy('user_id');
         $masters = SectionMaster::with(['user', 'section'])->get();
-
         $feedbacks = TeacherFeedback::where('teacher_id', $request->user()->id)
             ->get()
             ->keyBy('student_id');
-
         $achievements = Achievement::orderBy('name')->get();
+
+        $lessonProgressCards = [];
+        foreach ($students as $student) {
+            $studentSections = StudentSectionController::sectionsForUser($student)->load('quiz', 'lessons.unlockAfterLesson');
+            $completedLessonIds = StudentSectionController::completedLessonIdsForStudent($student);
+            $studentSectionsData = [];
+            $completedLessonsCount = 0;
+            $totalLessonsCount = 0;
+
+            foreach ($studentSections as $section) {
+                $lessons = Lesson::dedupeForDisplay($section->lessons)->values();
+                $lessonItems = [];
+
+                foreach ($lessons as $lesson) {
+                    $completed = StudentSectionController::isLessonCompletedByStudent($student, $lesson, $completedLessonIds);
+                    $unlocked = StudentSectionController::isLessonUnlockedForStudent($student, $lesson, $completedLessonIds);
+
+                    $lessonItems[] = [
+                        'lesson' => $lesson,
+                        'completed' => $completed,
+                        'unlocked' => $unlocked,
+                        'unlock_after_lesson' => $lesson->unlockAfterLesson,
+                    ];
+
+                    $totalLessonsCount++;
+                    if ($completed) {
+                        $completedLessonsCount++;
+                    }
+                }
+
+                if ($lessonItems !== []) {
+                    $studentSectionsData[] = [
+                        'section' => $section,
+                        'lessons' => $lessonItems,
+                    ];
+                }
+            }
+
+            $lessonProgressCards[$student->id] = [
+                'completedLessonsCount' => $completedLessonsCount,
+                'totalLessonsCount' => $totalLessonsCount,
+                'sections' => $studentSectionsData,
+            ];
+        }
 
         return view('teacher.progress.index', [
             'students' => $students,
@@ -41,6 +89,7 @@ class StudentProgressController extends Controller
             'masters' => $masters,
             'feedbacks' => $feedbacks,
             'achievements' => $achievements,
+            'lessonProgressCards' => $lessonProgressCards,
         ]);
     }
 
@@ -95,6 +144,9 @@ class StudentProgressController extends Controller
         $service = app(AchievementService::class);
         $awarded = $service->award($student, $data['achievement_key']);
 
-        return back()->with('status', $awarded ? __('messages.achievement_awarded') : __('messages.achievement_already_or_invalid'));
+        return back()->with(
+            'status',
+            $awarded ? __('messages.achievement_awarded') : __('messages.achievement_already_or_invalid')
+        );
     }
 }

@@ -56,9 +56,25 @@
     <h3 class="text-lg font-bold text-slate-800 mb-4">{{ __('messages.sections_lessons') }}</h3>
     <div class="space-y-3">
         @foreach($section->lessons ?? [] as $lesson)
-            <a href="{{ route('lessons.show', [$section, $lesson]) }}" class="block p-4 rounded-xl border border-slate-200 bg-white hover:border-primary hover:bg-primary-pale transition-colors">
-                <span class="font-semibold text-slate-800 dark:text-slate-100">{{ $lesson->getTitleForLocale(app()->getLocale()) }}</span>
-            </a>
+            @php
+                $lessonStatus = $lessonStatuses[$lesson->id] ?? ['completed' => false, 'unlocked' => true, 'unlock_after_lesson' => null];
+            @endphp
+            @if($lessonStatus['unlocked'])
+                <a href="{{ route('lessons.show', [$section, $lesson]) }}" class="block p-4 rounded-xl border border-slate-200 bg-white hover:border-primary hover:bg-primary-pale transition-colors">
+                    <span class="font-semibold text-slate-800 dark:text-slate-100">{{ $lesson->getTitleForLocale(app()->getLocale()) }}</span>
+                    @if($lessonStatus['completed'])
+                        <span class="ml-2 inline-flex rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-800">{{ __('messages.teacher_passed') }}</span>
+                    @endif
+                </a>
+            @else
+                <div class="block p-4 rounded-xl border border-slate-200 bg-slate-50 text-slate-500">
+                    <span class="font-semibold">{{ $lesson->getTitleForLocale(app()->getLocale()) }}</span>
+                    <span class="ml-2 inline-flex rounded-full bg-slate-200 px-2 py-0.5 text-xs font-semibold text-slate-600">{{ __('messages.lessons_locked') }}</span>
+                    @if($lessonStatus['unlock_after_lesson'])
+                        <p class="mt-1 text-sm">{{ __('messages.lessons_locked_after_hint', ['lesson' => $lessonStatus['unlock_after_lesson']->getTitleForLocale(app()->getLocale())]) }}</p>
+                    @endif
+                </div>
+            @endif
         @endforeach
     </div>
 

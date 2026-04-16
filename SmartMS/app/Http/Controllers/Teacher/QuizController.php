@@ -3,22 +3,29 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
-use App\Models\Section;
-use App\Models\Quiz;
 use App\Models\Question;
-use Illuminate\Http\Request;
+use App\Models\Quiz;
+use App\Models\Section;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class QuizController extends Controller
 {
     public function edit(Section $section): View
     {
-        $quiz = $section->quiz ?? new Quiz(['section_id' => $section->id, 'title' => 'Квиз: ' . $section->title, 'passing_percent' => 70]);
+        $quiz = $section->quiz ?? new Quiz([
+            'section_id' => $section->id,
+            'title' => 'Квиз: '.$section->title,
+            'passing_percent' => 70,
+        ]);
+
         if (!$quiz->exists) {
             $quiz->save();
         }
+
         $quiz->load('questions');
+
         return view('teacher.quiz.edit', ['section' => $section, 'quiz' => $quiz]);
     }
 
@@ -39,35 +46,63 @@ class QuizController extends Controller
             'questions.*.order' => ['nullable', 'integer'],
         ]);
 
-        $quiz = $section->quiz ?? Quiz::create(['section_id' => $section->id, 'title' => $data['title'], 'passing_percent' => $data['passing_percent']]);
+        $quiz = $section->quiz ?? Quiz::create([
+            'section_id' => $section->id,
+            'title' => $data['title'],
+            'passing_percent' => $data['passing_percent'],
+        ]);
+
         $quiz->update([
             'title' => $data['title'],
             'title_kk' => $data['title_kk'] ?? null,
             'passing_percent' => $data['passing_percent'],
         ]);
 
-        $order = 0;
-        foreach ($data['questions'] ?? [] as $q) {
-            $correct = is_array($q['correct_answer']) ? $q['correct_answer'] : array_filter(explode(',', $q['correct_answer']));
-            $opts = is_array($q['options'] ?? null) ? $q['options'] : (json_decode($q['options'] ?? '{}', true) ?: ['A' => 'Да', 'B' => 'Нет']);
-            $optsKk = isset($q['options_kk']) && $q['options_kk'] !== '' ? (is_array($q['options_kk']) ? $q['options_kk'] : (json_decode($q['options_kk'], true) ?: null)) : null;
-            $type = $q['type'] ?? 'single';
-            $payload = [
-                'text' => $q['text'],
-                'text_kk' => $q['text_kk'] ?? null,
-                'type' => $type,
-                'options' => $opts,
-                'options_kk' => $optsKk,
-                'correct_answer' => $correct,
-                'order' => $order++,
-            ];
-            if (!empty($q['id'])) {
-                Question::where('id', $q['id'])->update($payload);
-            } else {
-                $quiz->questions()->create($payload);
+        $keptQuestionIds = [];
+
+        foreach ($data['questions'] ?? [] as $index => $questionData) {
+            $question = null;
+            if (!empty($questionData['id'])) {
+                $question = $quiz->questions()->whereKey($questionData['id'])->first();
             }
+
+            $correctAnswer = is_array($questionData['correct_answer'])
+                ? $questionData['correct_answer']
+                : array_values(array_filter(array_map('trim', explode(',', (string) $questionData['correct_answer']))));
+
+            $options = is_array($questionData['options'] ?? null)
+                ? $questionData['options']
+                : (json_decode($questionData['options'] ?? '{}', true) ?: ['A' => 'Да', 'B' => 'Нет']);
+
+            $optionsKk = isset($questionData['options_kk']) && $questionData['options_kk'] !== ''
+                ? (is_array($questionData['options_kk']) ? $questionData['options_kk'] : (json_decode($questionData['options_kk'], true) ?: null))
+                : null;
+
+            $payload = [
+                'text' => $questionData['text'],
+                'text_kk' => $questionData['text_kk'] ?? null,
+                'type' => $questionData['type'] ?? 'single',
+                'options' => $options,
+                'options_kk' => $optionsKk,
+                'correct_answer' => $correctAnswer,
+                'order' => $questionData['order'] ?? $index,
+            ];
+
+            if ($question) {
+                $question->update($payload);
+            } else {
+                $question = $quiz->questions()->create($payload);
+            }
+
+            $keptQuestionIds[] = $question->id;
         }
 
-        return redirect()->route('teacher.sections.show', $section)->with('status', 'Квиз сохранён.');
+        $quiz->questions()
+            ->when($keptQuestionIds !== [], fn ($query) => $query->whereNotIn('id', $keptQuestionIds))
+            ->when($keptQuestionIds === [], fn ($query) => $query)
+            ->delete();
+
+        return redirect()->route('teacher.sections.show', $section)
+            ->with('status', __('messages.quiz_saved'));
     }
 }

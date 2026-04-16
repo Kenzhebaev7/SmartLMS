@@ -7,16 +7,16 @@
             <h2 class="text-2xl font-bold text-slate-900 dark:text-slate-100 mb-2">{{ __('messages.teacher_workspace_title') }}</h2>
             <p class="text-sm text-slate-600 dark:text-slate-300 max-w-2xl">{{ __('messages.teacher_workspace_desc') }}</p>
 
-            <div class="mt-5 grid gap-3 sm:grid-cols-3">
-                <div class="rounded-2xl border border-white/80 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 px-4 py-4">
+            <div class="mt-5 grid gap-3 lg:grid-cols-3">
+                <div class="rounded-2xl border border-white/80 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 px-4 py-4 text-fit">
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">{{ __('messages.teacher_student') }}</p>
                     <p class="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{{ $studentsCount ?? 0 }}</p>
                 </div>
-                <div class="rounded-2xl border border-white/80 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 px-4 py-4">
+                <div class="rounded-2xl border border-white/80 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 px-4 py-4 text-fit">
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">{{ __('messages.nav_sections') }}</p>
                     <p class="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{{ $sectionsCount ?? 0 }}</p>
                 </div>
-                <div class="rounded-2xl border border-white/80 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 px-4 py-4">
+                <div class="rounded-2xl border border-white/80 dark:border-slate-700 bg-white/80 dark:bg-slate-800/80 px-4 py-4 text-fit">
                     <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">{{ __('messages.teacher_certificates_title') }}</p>
                     <p class="mt-2 text-2xl font-bold text-slate-900 dark:text-slate-100">{{ $certificatesCount ?? 0 }}</p>
                 </div>
@@ -42,7 +42,7 @@
         </div>
     </div>
 
-    <div class="grid gap-4 md:grid-cols-3 mb-8">
+    <div class="grid gap-4 lg:grid-cols-3 mb-8">
         @foreach(($studentsByGrade ?? []) as $grade => $count)
             <div class="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-5 py-4">
                 <p class="text-xs font-semibold uppercase tracking-wide text-slate-400">{{ __('messages.auth_grade_' . $grade) }}</p>

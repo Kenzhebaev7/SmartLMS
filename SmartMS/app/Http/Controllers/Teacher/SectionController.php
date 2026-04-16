@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
+use App\Models\Lesson;
 use App\Models\Section;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
@@ -12,7 +13,12 @@ class SectionController extends Controller
 {
     public function index(): View
     {
-        $sections = Section::orderBy('grade')->orderByDesc('is_featured')->orderBy('order')->get();
+        $sections = Section::with(['quiz.questions'])
+            ->withCount('lessons')
+            ->orderBy('grade')
+            ->orderByDesc('is_featured')
+            ->orderBy('order')
+            ->get();
         return view('teacher.sections.index', ['sections' => $sections]);
     }
 
@@ -41,7 +47,12 @@ class SectionController extends Controller
 
     public function show(Section $section): View
     {
-        $section->load('lessons', 'quiz.questions');
+        $section->load('quiz.questions');
+        $section->setRelation(
+            'lessons',
+            Lesson::dedupeForDisplay($section->lessons()->with('unlockAfterLesson')->orderBy('order')->get())
+        );
+
         return view('teacher.sections.show', ['section' => $section]);
     }
 

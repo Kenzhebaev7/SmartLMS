@@ -28,6 +28,11 @@ class QuizController extends Controller
         }
 
         $quiz->load('questions');
+        $latestResult = Result::query()
+            ->where('user_id', $request->user()->id)
+            ->where('quiz_id', $quiz->id)
+            ->latest('attempted_at')
+            ->first();
 
         $quizLocale = $request->get('quiz_locale', session('quiz_locale', app()->getLocale()));
         if (!in_array($quizLocale, ['ru', 'kk'], true)) {
@@ -64,6 +69,7 @@ class QuizController extends Controller
             'timeLimitSeconds' => $timeLimitSeconds,
             'remainingSeconds' => $remainingSeconds,
             'deadlineAt' => $effectiveDeadline,
+            'latestResult' => $latestResult,
         ]);
     }
 

@@ -23,14 +23,14 @@ class CheckGrade
         $route = $request->route();
         $section = $route?->parameter('section');
         if ($section instanceof \App\Models\Section && $section->grade !== null && (int) $section->grade !== $grade) {
-            abort(403, __('sections.forbidden_grade'));
+            abort(403, __('messages.sections_forbidden_grade'));
         }
 
         $lesson = $route?->parameter('lesson');
         if ($lesson instanceof \App\Models\Lesson) {
             $lessonGrade = $lesson->grade ?? $lesson->section?->grade;
             if ($lessonGrade !== null && (int) $lessonGrade !== $grade) {
-                abort(403, __('sections.forbidden_grade'));
+                abort(403, __('messages.sections_forbidden_grade'));
             }
         }
 
