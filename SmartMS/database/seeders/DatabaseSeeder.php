@@ -74,6 +74,10 @@ class DatabaseSeeder extends Seeder
         $this->call(LessonsQuizzesExtraSeeder::class);
         $this->call(InformaticsByGradeSeeder::class);
         $this->call(Grade11RevisionExpansionSeeder::class);
+        $this->call(GradeLevelVideoLessonSeeder::class);
+        $this->call(EnsureMinGradeLevelSectionsSeeder::class);
+        $this->call(LessonVideoBackfillSeeder::class);
+        $this->call(LessonYoutubeTopicSeeder::class);
         $this->call(ExamQuizSeeder::class);
         $this->call(TranslationsKkSeeder::class);
         $this->call(EnsureMinQuizQuestionsSeeder::class);

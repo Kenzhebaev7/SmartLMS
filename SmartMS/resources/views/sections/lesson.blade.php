@@ -167,6 +167,11 @@
                                     loading="lazy"
                                 ></iframe>
                             </div>
+                            @if($watchUrl)
+                                <a href="{{ $watchUrl }}" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-slate-50 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-100">
+                                    {{ __('messages.lessons_video_open_on_youtube') }}
+                                </a>
+                            @endif
                         @elseif($otherUrl)
                             <p class="mt-3 text-sm text-slate-600">{{ __('messages.lessons_video_external_hint') }}</p>
                             <a href="{{ $otherUrl }}" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex items-center justify-center rounded-2xl bg-sky-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-sky-700">

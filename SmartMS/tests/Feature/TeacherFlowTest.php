@@ -13,6 +13,11 @@ use App\Models\Section;
 use App\Models\TeacherFeedback;
 use App\Models\Thread;
 use App\Models\User;
+use Database\Seeders\EnsureMinGradeLevelSectionsSeeder;
+use Database\Seeders\EnsureMinQuizQuestionsSeeder;
+use Database\Seeders\Grade11RevisionExpansionSeeder;
+use Database\Seeders\GradeLevelVideoLessonSeeder;
+use Database\Seeders\InformaticsByGradeSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -422,6 +427,40 @@ class TeacherFlowTest extends TestCase
 
         $response->assertOk();
         $this->assertCount(1, $response->viewData('threads'));
+    }
+
+    public function test_each_grade_and_level_has_minimum_four_sections_and_each_quiz_has_ten_questions(): void
+    {
+        $this->seed([
+            InformaticsByGradeSeeder::class,
+            Grade11RevisionExpansionSeeder::class,
+            GradeLevelVideoLessonSeeder::class,
+            EnsureMinGradeLevelSectionsSeeder::class,
+            EnsureMinQuizQuestionsSeeder::class,
+        ]);
+
+        foreach ([9, 10, 11] as $grade) {
+            $beginnerCount = Section::query()
+                ->where('grade', $grade)
+                ->where('is_revision', true)
+                ->count();
+
+            $advancedCount = Section::query()
+                ->where('grade', $grade)
+                ->where('is_revision', false)
+                ->count();
+
+            $this->assertGreaterThanOrEqual(4, $beginnerCount, "Grade {$grade} beginner should have at least 4 sections.");
+            $this->assertGreaterThanOrEqual(4, $advancedCount, "Grade {$grade} advanced should have at least 4 sections.");
+        }
+
+        Quiz::query()->withCount('questions')->get()->each(function (Quiz $quiz): void {
+            $this->assertGreaterThanOrEqual(
+                10,
+                $quiz->questions_count,
+                "Quiz {$quiz->id} ({$quiz->title}) should have at least 10 questions."
+            );
+        });
     }
 
     private function makeTeacher(): User
